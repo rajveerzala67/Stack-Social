@@ -1,0 +1,376 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Settings | STACK SOCIAL</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#fdf8f8",
+                        "inverse-surface": "#313030",
+                        "primary": "#000000",
+                        "on-error-container": "#93000a",
+                        "on-surface": "#1c1b1b",
+                        "on-secondary-fixed": "#1c1c19",
+                        "background": "#fdf8f8",
+                        "surface-container-high": "#ebe7e6",
+                        "surface-variant": "#e5e2e1",
+                        "primary-fixed-dim": "#c8c6c5",
+                        "on-tertiary-fixed-variant": "#484645",
+                        "on-primary-container": "#858383",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#c8c6c5",
+                        "secondary-fixed-dim": "#c9c6c1",
+                        "error": "#ba1a1a",
+                        "surface": "#fdf8f8",
+                        "surface-container": "#f1edec",
+                        "tertiary": "#000000",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#5f5e5e",
+                        "secondary": "#5f5e5b",
+                        "outline-variant": "#c4c7c7",
+                        "error-container": "#ffdad6",
+                        "outline": "#747878",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#444748",
+                        "tertiary-container": "#1c1b1a",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#1c1b1b",
+                        "on-secondary-fixed-variant": "#474743",
+                        "secondary-fixed": "#e5e2dd",
+                        "on-primary-fixed": "#1c1b1b",
+                        "inverse-on-surface": "#f4f0ef",
+                        "on-tertiary-container": "#868382",
+                        "secondary-container": "#e5e2dd",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#1c1b1a",
+                        "tertiary-fixed-dim": "#cac6c4",
+                        "tertiary-fixed": "#e6e2df",
+                        "surface-dim": "#ddd9d8",
+                        "on-primary-fixed-variant": "#474746",
+                        "primary-container": "#1c1b1b",
+                        "surface-container-low": "#f7f3f2",
+                        "primary-fixed": "#e5e2e1",
+                        "on-secondary-container": "#656461",
+                        "surface-container-highest": "#e5e2e1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "64px",
+                        "stack-sm": "16px",
+                        "margin-desktop": "64px",
+                        "gutter": "24px",
+                        "stack-md": "32px",
+                        "container-max": "1280px",
+                        "unit": "8px",
+                        "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "caption": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Playfair Display"],
+                        "display-md": ["Playfair Display"],
+                        "display-lg": ["Playfair Display"],
+                        "headline-lg": ["Playfair Display"]
+                    },
+                    "fontSize": {
+                        "label-md": ["13px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "caption": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "display-md": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "headline-lg": ["28px", {"lineHeight": "1.3", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #E5E2DD;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #000000;
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+        body {
+            background-color: #F7F5F2; /* Warm Ivory Override */
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface selection:bg-primary-fixed selection:text-primary">
+<!-- Desktop Side Navigation -->
+<nav class="fixed left-0 top-0 h-full w-64 hidden lg:flex flex-col bg-surface-container-lowest border-r border-outline-variant z-50">
+<div class="px-margin-desktop py-stack-md">
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tighter">STACK</h1>
+<p class="font-label-md text-[10px] text-secondary-fixed-dim uppercase tracking-[0.2em] mt-2">Editorial Curation</p>
+</div>
+<div class="flex flex-col flex-grow mt-stack-md">
+<a class="flex items-center gap-4 py-3 px-6 text-secondary hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-body-md text-body-md">Home</span>
+</a>
+<a class="flex items-center gap-4 py-3 px-6 text-secondary hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-body-md text-body-md">Discover</span>
+</a>
+<a class="flex items-center gap-4 py-3 px-6 text-secondary hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">mail</span>
+<span class="font-body-md text-body-md">Messages</span>
+</a>
+<a class="flex items-center gap-4 py-3 px-6 text-secondary hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span class="font-body-md text-body-md">Notifications</span>
+</a>
+<a class="flex items-center gap-4 py-3 px-6 text-secondary hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-body-md text-body-md">Create</span>
+</a>
+<a class="flex items-center gap-4 py-3 px-6 text-secondary hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-body-md text-body-md">Profile</span>
+</a>
+<a class="flex items-center gap-4 py-3 px-6 bg-surface-container-high text-primary font-semibold" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</div>
+<div class="p-6 border-t border-outline-variant flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBebFRCiTrYeBvHzppAxKjFioc1fbzTJOB9vSdaGcssBd8Q12mWS3vgi3Ra-WiumbrOgUGBGqlcrN_36qPb1KM-oWXmFa6CbEMfEqvYybYKrtBbNnqDoBAtscP6E2j--Hmj_lvsvMek1cFmI3KFuCJ0Wc1cPnM2RuVz7ht7WOIFE2QR0I01NKn1Jm1sXpO7Ty-Pth0GHaDq4gUBqmlgOjyt5ZjBMYApYT3fni0zx3lf-sxrFt4Fzzfnp6rLWODJZiZPTRwHarQtlbWi">
+</div>
+<div>
+<p class="font-label-md text-on-surface">Julian M.</p>
+<p class="text-caption text-secondary">Premium Member</p>
+</div>
+</div>
+</nav>
+<!-- Mobile Top Bar -->
+<header class="fixed top-0 w-full z-50 lg:hidden bg-surface/80 backdrop-blur-xl border-b border-outline-variant flex justify-between items-center px-margin-mobile h-16">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary tracking-tighter">STACK</h1>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-primary cursor-pointer">person</span>
+</div>
+</header>
+<!-- Main Content -->
+<main class="lg:ml-64 pt-16 lg:pt-0 min-h-screen flex justify-center">
+<div class="w-full max-w-[720px] px-margin-mobile md:px-margin-desktop py-stack-lg">
+<!-- Header -->
+<header class="mb-stack-lg border-b border-outline-variant pb-stack-sm">
+<h2 class="font-display-md text-display-md text-primary mb-2">Settings</h2>
+<p class="font-body-lg text-body-lg text-secondary">Manage your editorial experience and account preferences.</p>
+</header>
+<!-- Settings Content Grid -->
+<div class="flex flex-col gap-stack-lg">
+<!-- Section: Notifications -->
+<section>
+<h3 class="font-label-md text-label-md text-primary uppercase tracking-widest mb-6">Notifications</h3>
+<div class="space-y-gutter">
+<div class="flex justify-between items-center py-2">
+<div>
+<p class="font-body-md text-body-md text-on-surface">Push Notifications</p>
+<p class="text-caption text-secondary">Receive real-time updates on your device.</p>
+</div>
+<label class="toggle-switch">
+<input checked="" type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+<div class="flex justify-between items-center py-2">
+<div>
+<p class="font-body-md text-body-md text-on-surface">Email Digest</p>
+<p class="text-caption text-secondary">A weekly curation of your top stories.</p>
+</div>
+<label class="toggle-switch">
+<input type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+<div class="flex justify-between items-center py-2">
+<div>
+<p class="font-body-md text-body-md text-on-surface">Direct Messages</p>
+<p class="text-caption text-secondary">Notification for new private conversations.</p>
+</div>
+<label class="toggle-switch">
+<input checked="" type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+</div>
+</section>
+<!-- Section: Legacy Premium (Account) -->
+<section class="bg-surface-container-low p-stack-md border border-outline-variant relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 opacity-5 pointer-events-none translate-x-12 -translate-y-12">
+<img class="w-full h-full object-cover rounded-full" data-alt="A macro photograph of high-end, luxury stationery with gold foil embossing, captured in soft, natural morning light. The composition is extremely minimalist, focusing on the texture of thick, ivory-toned paper and the sharp, elegant lines of a serif typeface. The mood is sophisticated, timeless, and expensive, fitting for a premium editorial brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBk8W9UouG0cfu4057ZqDtK5dy8LhLYlJd3pL-6opyW7XES_mB2SuQqbISSzCf1zNXxgD35jEjm-vH-p46D4pHfoqAVZCEhUaUFzLNN1-1JL-LyUq7MJhh-jlQhrLcZq0FDmTtsUKHejBXmQ2EPrno_kidYKgoIyXA5FWMHDp7cFKdToFq5jc-LkGu3j_F4Q0ycd3YWlniI10PPpfe1thxrVl40IGx6lJleio2Tjc7jqQvZowedKaXQKU4_-aykjiG-dMFuE-T7Lxoq">
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-[#B8860B]" style="font-variation-settings: 'FILL' 1;">stars</span>
+<h3 class="font-label-md text-label-md text-primary uppercase tracking-widest">The Legacy Badge</h3>
+</div>
+<p class="font-display-md text-[24px] text-primary mb-4 leading-tight">Elevate your presence within the Stack community.</p>
+<ul class="space-y-2 mb-8 text-secondary font-body-md">
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-sm mt-1">check_circle</span>
+<span>Exclusive typography sets for your editorial posts.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-sm mt-1">check_circle</span>
+<span>Verified status badge for all public interactions.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-sm mt-1">check_circle</span>
+<span>Zero advertising across the entire Stack ecosystem.</span>
+</li>
+</ul>
+<button class="w-full bg-primary text-on-primary py-4 px-8 font-label-md uppercase tracking-widest hover:opacity-90 transition-opacity">
+                            Upgrade to Legacy
+                        </button>
+</div>
+</section>
+<!-- Section: Privacy & Security -->
+<section>
+<h3 class="font-label-md text-label-md text-primary uppercase tracking-widest mb-6">Privacy &amp; Security</h3>
+<div class="divide-y divide-outline-variant">
+<a class="group flex justify-between items-center py-4 hover:px-2 transition-all" href="#">
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">Account Privacy</span>
+<span class="material-symbols-outlined text-secondary group-hover:translate-x-1 transition-transform">chevron_right</span>
+</a>
+<a class="group flex justify-between items-center py-4 hover:px-2 transition-all" href="#">
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">Blocked Accounts</span>
+<span class="material-symbols-outlined text-secondary group-hover:translate-x-1 transition-transform">chevron_right</span>
+</a>
+<a class="group flex justify-between items-center py-4 hover:px-2 transition-all" href="#">
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">Two-Factor Authentication</span>
+<span class="material-symbols-outlined text-secondary group-hover:translate-x-1 transition-transform">chevron_right</span>
+</a>
+</div>
+</section>
+<!-- Section: Appearance -->
+<section class="mb-stack-lg">
+<h3 class="font-label-md text-label-md text-primary uppercase tracking-widest mb-6">Appearance</h3>
+<div class="space-y-gutter">
+<div class="flex justify-between items-center py-2">
+<div>
+<p class="font-body-md text-body-md text-on-surface">Dark Mode</p>
+<p class="text-caption text-secondary">Switch to a dark color palette for evening browsing.</p>
+</div>
+<label class="toggle-switch">
+<input id="dark-mode-toggle" type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+<div class="flex justify-between items-center py-2">
+<div>
+<p class="font-body-md text-body-md text-on-surface">Reduced Motion</p>
+<p class="text-caption text-secondary">Minimizes animations for a calmer experience.</p>
+</div>
+<label class="toggle-switch">
+<input type="checkbox">
+<span class="slider"></span>
+</label>
+</div>
+</div>
+</section>
+<!-- Logout / Danger Zone -->
+<section class="pt-stack-md border-t border-outline-variant flex flex-col items-center gap-4">
+<button class="text-error font-label-md uppercase tracking-widest hover:underline underline-offset-8">Logout from all devices</button>
+<p class="text-caption text-secondary">Stack Social Version 4.2.1 • © 2024</p>
+</section>
+</div>
+</div>
+</main>
+<!-- Footer Mobile (Suppressed for task focus, but template provided) -->
+<footer class="lg:hidden w-full py-stack-md border-t border-outline-variant bg-surface flex flex-col items-center gap-gutter px-margin-mobile mb-20">
+<p class="font-label-md text-label-md text-primary">STACK SOCIAL</p>
+<div class="flex gap-4">
+<a class="text-caption uppercase tracking-widest text-secondary hover:text-primary" href="#">About</a>
+<a class="text-caption uppercase tracking-widest text-secondary hover:text-primary" href="#">Privacy</a>
+<a class="text-caption uppercase tracking-widest text-secondary hover:text-primary" href="#">Terms</a>
+</div>
+<p class="text-caption text-secondary">© 2024 STACK SOCIAL</p>
+</footer>
+<!-- Mobile Navigation Bar -->
+<div class="lg:hidden fixed bottom-0 w-full h-16 bg-surface-bright/90 backdrop-blur-xl border-t border-outline-variant flex justify-around items-center z-50">
+<span class="material-symbols-outlined text-secondary">home</span>
+<span class="material-symbols-outlined text-secondary">explore</span>
+<span class="material-symbols-outlined text-secondary">add_box</span>
+<span class="material-symbols-outlined text-secondary">mail</span>
+<span class="material-symbols-outlined text-primary font-bold">settings</span>
+</div>
+<script>
+        // Dark Mode Toggle Micro-interaction
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        darkModeToggle.addEventListener('change', () => {
+            if (darkModeToggle.checked) {
+                document.documentElement.classList.add('dark');
+                // Normally would persist preference
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Soft ripple/active states for list items
+        document.querySelectorAll('a, button, label').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.transform = 'scale(0.98)';
+                el.style.transition = 'transform 0.1s ease';
+            });
+            el.addEventListener('mouseup', () => {
+                el.style.transform = 'scale(1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>
+

@@ -1,0 +1,80 @@
+========================================================================
+STACK SOCIAL - TECH STACK & END-TO-END CAPABILITIES GUIDE
+========================================================================
+
+This document outlines the complete tech stack, architecture, and end-to-end functional features implemented within the Stack Social curation platform.
+
+------------------------------------------------------------------------
+1. THE TECH STACK
+------------------------------------------------------------------------
+
+* Core Framework: Next.js 16 (React 19)
+  - Uses the Next.js App Router for dynamic routing, layout rendering, and serverless API endpoints (e.g. LiveKit token generation).
+  - Uses Turbopack for high-speed local compiling and hot module replacement.
+
+* Styling & Typography: Tailwind CSS (v4) & Vanilla CSS
+  - Custom brand colors, gradients, and typography mapped to Tailwind design tokens.
+  - Immersive glassmorphism styles, dark layouts, and premium editorial spacing.
+
+* Backend, Storage & Real-Time Sync: Supabase
+  - PostgreSQL Database: Houses tables for profiles, follows, posts, likes, comments, bookmarks, conversations, members, messages, blocks, user preferences, calls, and call notifications.
+  - Supabase Auth: Secure email/password verification, profile gating, and JWT session handling.
+  - Supabase Realtime: Postgres Replication listeners and Broadcast channels used for message syncing, typing indicators, caller signaling, presence logs, and instant notifications.
+  - Supabase Storage: Buckets for profile avatars, post media (photos/videos), stories, and voice message audio notes (.webm files).
+
+* Media Streaming & WebRTC: LiveKit
+  - Real-time video/audio routing over WebRTC.
+  - livekit-client SDK: Coordinates room connections, audio/video track publication, and quality tracking.
+  - livekit-server-sdk: Creates server-side room access JWT tokens using API keys.
+
+* Animations & Utilities:
+  - GSAP (GreenSock Animation Platform): Drives micro-animations, message bubble fades, and transition effects.
+  - Lucide React: Provides modern vector icons throughout the interface.
+  - Web Audio API: Synthesizes high-fidelity telephone ring tones inside the browser dynamically without requiring external audio assets.
+  - HTML5 Canvas API: Captures real-time animated video streams for simulated call previews when LiveKit credentials are not active.
+
+------------------------------------------------------------------------
+2. WHAT WE DO END-TO-END
+------------------------------------------------------------------------
+
+* User Account & Recovery:
+  - Secure signup (with automatic custom profile creation) and sign in.
+  - Four-step password recovery flow: input email, receive and verify OTP code, update password, success redirection.
+
+* Social Graph & Personalization:
+  - Dynamic follow/unfollow capabilities immediately updating follower graphs.
+  - Onboarding preference selector allowing users to choose curators' categories.
+  - Feed sorting algorithm reordering masonry cards to match chosen preferences.
+  - Profile search directory with instant debounced input queries.
+
+* Privacy & Block Guards:
+  - Private account lock: Users can toggle privacy. Profile content is locked behind a lock screen unless you follow the user.
+  - Block system: Users can block accounts, instantly filtering out their posts/stories from feeds and locking their profiles.
+  - Follower requests: Follows to private profiles enter a "pending" queue, manageable on the notifications page.
+  - Interactive Follower/Following Modals: Access counts to view overlays of followed creators with quick profile switching and search functionality.
+
+* Real-Time Conversational Inbox:
+  - Direct message threads: Instant real-time text delivery.
+  - Active Presence: "Online Now" horizontal list showing online curators with green dots.
+  - Compose New Chat: Modal to find and message any registered curator.
+  - Emoji Picker: Unicode emoji selector to append emojis to chat messages.
+  - Voice Notes: Capture browser audio clips with a recording panel (blinking indicators, timers, trash/cancel, stop & send), uploading to Supabase and playing inline inside the chat window.
+  - File Sharing: Upload and mirror images/videos inside the chat view.
+  - Typing Indicators: Debounced indicators showing when the counterpart is composing.
+
+* Live Audio & Video Calling:
+  - Outgoing voice/video call buttons in the active conversation header.
+  - DB Persistence: Registers call records in 'calls' table with duration, timestamps, and caller details.
+  - Realtime Signaling: Broadcasts 'call-offer' and 'call-accepted/declined' events instantly.
+  - Ringing cadences: Outgoing and incoming electronic ring cadet-synced audios generated via Web Audio API. Auto-cancels call if unanswered after 45s (missed call).
+  - High-Fidelity Simulator: Gracefully runs call simulator if LiveKit credentials aren't loaded in env (renders live canvas abstract gradient stream and connects camera).
+  - Calling UI: Draggable Picture-in-Picture preview, screen sharing toggles, monospace elapsed timer, signal bars quality indicator, hardware selection, and HTML5 browser fullscreen toggle.
+  - Inline Call Logs: Displays card call summaries (Ended with duration, Missed, Declined) in the message feed.
+
+* Editorial Content Creator Studio:
+  - Capture photos/videos using browser cameras with options for quality, torch/flash, and switching facing direction.
+  - Local Soundtracks: Overlay background songs on stories/posts with looping audio players.
+  - Preview & Mute: Auto-mutes uploaded video audio if a soundtrack is playing to prevent noise overlap.
+  - Story Viewer: Magazine-style 16:9 full-screen content progression supporting images and videos, showing visual user story rings on profile avatars.
+  - Post deletion: Delete options on self-owned posts automatically cascading deletions across likes, comments, and stats.
+========================================================================

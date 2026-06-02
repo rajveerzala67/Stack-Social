@@ -1,0 +1,313 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:wght@500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'wght' 200, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .viewfinder-overlay {
+            background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.1) 100%);
+        }
+        .shutter-ring {
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .shutter-ring:active {
+            transform: scale(0.92);
+        }
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#1c1b1b",
+                        "error-container": "#ffdad6",
+                        "on-surface": "#1c1b1b",
+                        "primary-fixed": "#e5e2e1",
+                        "inverse-on-surface": "#f4f0ef",
+                        "outline-variant": "#c4c7c7",
+                        "on-secondary-container": "#656461",
+                        "secondary-fixed-dim": "#c9c6c1",
+                        "inverse-primary": "#c8c6c5",
+                        "surface": "#fdf8f8",
+                        "on-surface-variant": "#444748",
+                        "tertiary-container": "#1c1b1a",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#cac6c4",
+                        "background": "#fdf8f8",
+                        "on-error-container": "#93000a",
+                        "surface-bright": "#fdf8f8",
+                        "on-secondary-fixed-variant": "#474743",
+                        "surface-container-low": "#f7f3f2",
+                        "surface-dim": "#ddd9d8",
+                        "surface-tint": "#5f5e5e",
+                        "on-primary": "#ffffff",
+                        "primary": "#000000",
+                        "surface-variant": "#e5e2e1",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#484645",
+                        "outline": "#747878",
+                        "surface-container": "#f1edec",
+                        "secondary": "#5f5e5b",
+                        "secondary-fixed": "#e5e2dd",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#868382",
+                        "on-primary-container": "#858383",
+                        "on-primary-fixed-variant": "#474746",
+                        "tertiary-fixed": "#e6e2df",
+                        "inverse-surface": "#313030",
+                        "primary-fixed-dim": "#c8c6c5",
+                        "on-secondary-fixed": "#1c1c19",
+                        "on-error": "#ffffff",
+                        "tertiary": "#000000",
+                        "on-tertiary-fixed": "#1c1b1a",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#1c1b1b",
+                        "surface-container-high": "#ebe7e6",
+                        "surface-container-highest": "#e5e2e1",
+                        "secondary-container": "#e5e2dd",
+                        "primary-container": "#1c1b1b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-md": "32px",
+                        "gutter": "24px",
+                        "stack-lg": "64px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "64px",
+                        "container-max": "1280px",
+                        "unit": "8px",
+                        "stack-sm": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Playfair Display"],
+                        "label-md": ["Inter"],
+                        "display-md": ["Playfair Display"],
+                        "headline-lg-mobile": ["Playfair Display"],
+                        "display-lg": ["Playfair Display"],
+                        "body-lg": ["Inter"],
+                        "caption": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg": ["28px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "label-md": ["13px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600"}],
+                        "display-md": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "caption": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface-container-low text-on-surface selection:bg-primary-fixed selection:text-primary">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-full w-64 hidden lg:flex flex-col py-stack-md border-r border-outline-variant bg-surface z-50">
+<div class="px-6 mb-stack-lg">
+<h1 class="font-headline-lg text-headline-lg tracking-tighter text-primary">STACK SOCIAL</h1>
+<p class="font-caption text-caption uppercase tracking-widest text-secondary mt-1">Editorial Curation</p>
+</div>
+<nav class="flex-grow">
+<!-- Home -->
+<a class="text-secondary flex items-center gap-4 py-3 px-6 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-body-md text-body-md">Home</span>
+</a>
+<!-- Discover -->
+<a class="text-secondary flex items-center gap-4 py-3 px-6 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="font-body-md text-body-md">Discover</span>
+</a>
+<!-- Messages -->
+<a class="text-secondary flex items-center gap-4 py-3 px-6 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+<span class="font-body-md text-body-md">Messages</span>
+</a>
+<!-- Notifications -->
+<a class="text-secondary flex items-center gap-4 py-3 px-6 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="font-body-md text-body-md">Notifications</span>
+</a>
+<!-- Create (ACTIVE) -->
+<a class="text-primary font-semibold flex items-center gap-4 py-3 px-6 bg-surface-container-low border-r-2 border-primary" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+<span class="font-body-md text-body-md">Create</span>
+</a>
+<!-- Profile -->
+<a class="text-secondary flex items-center gap-4 py-3 px-6 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-body-md text-body-md">Profile</span>
+</a>
+<!-- Settings -->
+<a class="text-secondary flex items-center gap-4 py-3 px-6 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</nav>
+<div class="px-6 pt-stack-md border-t border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A high-end editorial portrait of a professional male creator with a focused expression. The lighting is soft and cinematic, characteristic of a luxury fashion magazine. The background is a clean, minimalist studio set with warm ivory tones, reflecting the premium and sophisticated aesthetic of the social platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNYw1Dpb-if1fPJO2uMy76oFnDS_pIQpwfsWNNd4KA96Rn3_JVVpSFI-zGvcwvP1IZSWaEHTC8VtcfJvj1sNb3aqs_7T0vLsGgdwJtEAfLy_pK5TvdwgFBg6T00kpQfpxvOCxVZpfB7G4jDjqsUCyDgqvSCxOyRJCIKsS0Kqb_r8kuU2n8LYzed8es2-wmL5D98LyceY7yWv2N5-CIJ3zUMKU1ADxjryx1ouMLEu6D40-ra-k9uinyX5qJDAcDhh5_tL5jvrpv2Zse">
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Alex Mercer</p>
+<p class="font-caption text-caption text-secondary">Director Mode</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="lg:ml-64 min-h-screen flex flex-col items-center justify-center p-6 md:p-margin-desktop">
+<!-- Header Controls (Subtle) -->
+<div class="fixed top-0 right-0 left-0 lg:left-64 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-20 z-40 bg-surface/50 backdrop-blur-md">
+<button class="flex items-center gap-2 group">
+<span class="material-symbols-outlined text-primary group-hover:-translate-x-1 transition-transform">arrow_back</span>
+<span class="font-label-md text-label-md uppercase tracking-widest text-primary">Cancel</span>
+</button>
+<div class="flex items-center gap-stack-sm">
+<button class="w-10 h-10 flex items-center justify-center text-primary hover:bg-surface-container transition-colors rounded-full">
+<span class="material-symbols-outlined">flash_on</span>
+</button>
+<button class="px-6 py-2 bg-primary text-on-primary font-label-md text-label-md rounded-full hover:opacity-90 transition-opacity">
+                    POST
+                </button>
+</div>
+</div>
+<!-- Creator Studio Workspace -->
+<div class="w-full max-w-4xl flex flex-col items-center">
+<!-- Viewfinder Frame -->
+<div class="relative w-full aspect-[4/5] md:max-h-[768px] md:w-auto bg-black rounded-xl overflow-hidden shadow-2xl group">
+<!-- Camera Feed Placeholder -->
+<img alt="Camera Feed" class="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" data-alt="A cinematic, shallow depth-of-field view of a minimalist interior space with clean architectural lines and natural sunlight streaming through a large window. The mood is tranquil and sophisticated, with a warm ivory color palette. This represents the premium camera viewfinder experience in a high-end social media creator studio, prioritizing visual clarity and silence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoh2Ff047yH2bEK204MZ5Ak8qXxTzMk2PRqNRIqqrVxczLHBea0n5ugjEUm_QinZ7S51Nod69VCpe9NcwyfGE0UYljolmh0lQA6Tl9GtBe4cn6qTQf740iXa52KMCR-jtgWxM0FXlR1QkLK3MtDQVyKWHwRdIWu5x7FOOxtMVKqsGXJyrq5xJa6YRkbPqob5XFHdVbY2bE1jL62iv80jTvziw5uV2IP2ytsMBKh1LbelwnOdcYkyzYH_mcgy6GITRVxV2jangxblYA">
+<!-- Viewfinder Overlays -->
+<div class="absolute inset-0 viewfinder-overlay pointer-events-none"></div>
+<!-- Corner Guides -->
+<div class="absolute top-4 left-4 w-6 h-6 border-t border-l border-white/40"></div>
+<div class="absolute top-4 right-4 w-6 h-6 border-t border-r border-white/40"></div>
+<div class="absolute bottom-4 left-4 w-6 h-6 border-b border-l border-white/40"></div>
+<div class="absolute bottom-4 right-4 w-6 h-6 border-b border-r border-white/40"></div>
+<!-- Studio UI Elements -->
+<div class="absolute inset-0 flex flex-col justify-between p-stack-sm">
+<!-- Top Action Row -->
+<div class="flex justify-center">
+<button class="glass-panel px-4 py-2 rounded-full border border-white/20 flex items-center gap-2 group active:scale-95 transition-all">
+<span class="material-symbols-outlined text-white text-sm">music_note</span>
+<span class="font-label-md text-[11px] text-white tracking-widest uppercase">Select Soundtrack</span>
+</button>
+</div>
+<!-- Center Alignment Guide -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center opacity-30">
+<div class="w-px h-full bg-white"></div>
+<div class="h-px w-full bg-white absolute"></div>
+</div>
+<!-- Bottom Studio Controls -->
+<div class="space-y-stack-sm mb-4">
+<!-- Mode Selector -->
+<div class="flex justify-center items-center gap-8 text-white/50">
+<button class="font-label-md text-[10px] tracking-[0.2em] uppercase transition-all hover:text-white" id="mode-Story" onclick="switchMode('Story')">Story</button>
+<button class="font-label-md text-[10px] tracking-[0.2em] uppercase text-white font-bold transition-all border-b border-white pb-1" id="mode-Image" onclick="switchMode('Image')">Image</button>
+<button class="font-label-md text-[10px] tracking-[0.2em] uppercase transition-all hover:text-white" id="mode-Reel" onclick="switchMode('Reel')">Reel</button>
+</div>
+<!-- Main Shutter & Utilities -->
+<div class="flex items-center justify-between px-gutter">
+<!-- Gallery -->
+<button class="w-12 h-12 rounded-lg border-2 border-white/20 overflow-hidden active:scale-90 transition-transform">
+<img alt="Gallery Preview" class="w-full h-full object-cover" data-alt="A small, soft-focus preview image for a gallery upload button. The image features a luxury fashion detail, like a silk texture or minimalist jewelry, in high-contrast black and white. It sits within a premium creator studio UI, maintaining the editorial aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuASGLRJQKv1p1ZEkCXJvhihZ2lQHOZALNFoKBa3tKRi2wBT8BVvEaxlbTgmtUGzirJlr6kGv8-6c6z3KwTLmReJqIfMCtGldQbOsjOEaSlJ3SrGtRn10qgVZc1kr4Uec7GmKWsBhmRkTrUzKXdysi3n8ocEz_t56OlFiMhKt2jnhmXffDbc7GP6KJ4T35qvT6GntAxGtSbsYx8WRy8v8x6W5RqJpKVU56eZuUUUH6D3Dmb0Uz0D6xnAnelzOAgylHj2HtaGi1dUjknG">
+</button>
+<!-- Shutter Button -->
+<div class="relative flex items-center justify-center">
+<div class="absolute w-20 h-20 rounded-full border border-white/30 scale-110"></div>
+<button class="shutter-ring w-16 h-16 rounded-full bg-white border-[6px] border-transparent ring-2 ring-white/10 active:scale-90 transition-all" id="shutter"></button>
+</div>
+<!-- Flip Camera -->
+<button class="w-12 h-12 flex items-center justify-center bg-white/10 backdrop-blur-md rounded-full text-white hover:bg-white/20 transition-colors active:rotate-180 duration-500">
+<span class="material-symbols-outlined">cached</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Focus Context/Subtext -->
+<div class="mt-stack-md text-center max-w-md animate-pulse">
+<p class="font-caption text-caption text-secondary uppercase tracking-[0.3em]">Ready to capture</p>
+<h2 class="font-headline-lg text-headline-lg mt-2 italic">Define the Moment</h2>
+</div>
+</div>
+</main>
+<!-- Mobile Bottom Navigation (Hidden on Desktop) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface/80 backdrop-blur-xl flex justify-around items-center px-4 border-t border-outline-variant z-50">
+<button class="flex flex-col items-center text-secondary">
+<span class="material-symbols-outlined">home</span>
+</button>
+<button class="flex flex-col items-center text-secondary">
+<span class="material-symbols-outlined">explore</span>
+</button>
+<button class="flex flex-col items-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+</button>
+<button class="flex flex-col items-center text-secondary">
+<span class="material-symbols-outlined">mail</span>
+</button>
+<button class="flex flex-col items-center text-secondary">
+<span class="material-symbols-outlined">person</span>
+</button>
+</nav>
+<script>
+        function switchMode(mode) {
+            const modes = ['Story', 'Image', 'Reel'];
+            modes.forEach(m => {
+                const el = document.getElementById(`mode-${m}`);
+                if (m === mode) {
+                    el.classList.add('text-white', 'font-bold', 'border-b', 'border-white', 'pb-1');
+                    el.classList.remove('text-white/50');
+                } else {
+                    el.classList.remove('text-white', 'font-bold', 'border-b', 'border-white', 'pb-1');
+                    el.classList.add('text-white/50');
+                }
+            });
+            
+            // Micro-interaction for mode switch
+            const viewfinder = document.querySelector('.group img');
+            viewfinder.style.filter = 'brightness(0.7) blur(2px)';
+            setTimeout(() => {
+                viewfinder.style.filter = 'brightness(1) blur(0px)';
+            }, 300);
+        }
+
+        // Shutter interaction
+        const shutter = document.getElementById('shutter');
+        shutter.addEventListener('click', () => {
+            const flash = document.createElement('div');
+            flash.className = 'fixed inset-0 bg-white z-[100] pointer-events-none opacity-0 transition-opacity duration-75';
+            document.body.appendChild(flash);
+            
+            requestAnimationFrame(() => {
+                flash.style.opacity = '1';
+                setTimeout(() => {
+                    flash.style.opacity = '0';
+                    setTimeout(() => flash.remove(), 100);
+                }, 100);
+            });
+        });
+    </script>
+</body></html>
+

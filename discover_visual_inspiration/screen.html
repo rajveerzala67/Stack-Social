@@ -1,0 +1,409 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Discover the Extraordinary | STACK SOCIAL</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed": "#1c1b1b",
+                      "on-background": "#1c1b1b",
+                      "on-primary-container": "#858383",
+                      "background": "#fdf8f8",
+                      "on-error-container": "#93000a",
+                      "on-tertiary-container": "#868382",
+                      "on-tertiary-fixed": "#1c1b1a",
+                      "inverse-primary": "#c8c6c5",
+                      "tertiary-fixed": "#e6e2df",
+                      "tertiary": "#000000",
+                      "on-primary": "#ffffff",
+                      "secondary": "#5f5e5b",
+                      "primary-fixed": "#e5e2e1",
+                      "error-container": "#ffdad6",
+                      "on-surface": "#1c1b1b",
+                      "error": "#ba1a1a",
+                      "inverse-surface": "#313030",
+                      "on-secondary-fixed": "#1c1c19",
+                      "on-error": "#ffffff",
+                      "surface-tint": "#5f5e5e",
+                      "on-secondary-container": "#656461",
+                      "surface-dim": "#ddd9d8",
+                      "surface-variant": "#e5e2e1",
+                      "primary-container": "#1c1b1b",
+                      "outline": "#747878",
+                      "on-primary-fixed-variant": "#474746",
+                      "tertiary-container": "#1c1b1a",
+                      "surface-container-highest": "#e5e2e1",
+                      "on-secondary": "#ffffff",
+                      "on-secondary-fixed-variant": "#474743",
+                      "secondary-fixed": "#e5e2dd",
+                      "surface-container": "#f1edec",
+                      "on-tertiary": "#ffffff",
+                      "surface-bright": "#fdf8f8",
+                      "primary-fixed-dim": "#c8c6c5",
+                      "secondary-container": "#e5e2dd",
+                      "on-surface-variant": "#444748",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-fixed-dim": "#cac6c4",
+                      "surface-container-low": "#f7f3f2",
+                      "primary": "#000000",
+                      "secondary-fixed-dim": "#c9c6c1",
+                      "surface-container-high": "#ebe7e6",
+                      "on-tertiary-fixed-variant": "#484645",
+                      "outline-variant": "#c4c7c7",
+                      "surface": "#fdf8f8",
+                      "inverse-on-surface": "#f4f0ef"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-max": "1280px",
+                      "stack-md": "32px",
+                      "stack-lg": "64px",
+                      "margin-mobile": "20px",
+                      "margin-desktop": "64px",
+                      "gutter": "24px",
+                      "unit": "8px",
+                      "stack-sm": "16px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Playfair Display"],
+                      "body-lg": ["Inter"],
+                      "headline-lg": ["Playfair Display"],
+                      "display-lg": ["Playfair Display"],
+                      "display-md": ["Playfair Display"],
+                      "label-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "caption": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                      "headline-lg": ["28px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                      "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "display-md": ["36px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                      "label-md": ["13px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "caption": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+      </script>
+<style>
+        .masonry-grid {
+            column-count: 3;
+            column-gap: 24px;
+        }
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 24px;
+        }
+        @media (max-width: 1024px) {
+            .masonry-grid { column-count: 2; }
+        }
+        @media (max-width: 640px) {
+            .masonry-grid { column-count: 1; }
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-tab-indicator {
+            position: absolute;
+            left: 0;
+            width: 3px;
+            height: 24px;
+            background-color: #000;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-x-hidden">
+<!-- SideNavBar (Authority: Shared Components JSON) -->
+<aside class="fixed left-0 top-0 h-full w-64 hidden lg:flex flex-col bg-surface py-stack-md border-r border-outline-variant z-50">
+<div class="px-6 mb-12">
+<h1 class="font-headline-lg text-headline-lg tracking-tighter text-primary">STACK SOCIAL</h1>
+<p class="font-caption text-caption uppercase tracking-widest text-secondary mt-1">Editorial Curation</p>
+</div>
+<nav class="flex-grow">
+<!-- Home -->
+<a class="text-secondary hover:bg-surface-container-high transition-colors flex items-center gap-4 py-3 px-6 cursor-pointer active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-body-md text-body-md">Home</span>
+</a>
+<!-- Discover (ACTIVE STATE) -->
+<a class="text-primary font-semibold flex items-center gap-4 py-3 px-6 bg-surface-container-low transition-colors relative" href="#">
+<div class="active-tab-indicator"></div>
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="font-body-md text-body-md">Discover</span>
+</a>
+<!-- Messages -->
+<a class="text-secondary hover:bg-surface-container-high transition-colors flex items-center gap-4 py-3 px-6 cursor-pointer active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+<span class="font-body-md text-body-md">Messages</span>
+</a>
+<!-- Notifications -->
+<a class="text-secondary hover:bg-surface-container-high transition-colors flex items-center gap-4 py-3 px-6 cursor-pointer active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="font-body-md text-body-md">Notifications</span>
+</a>
+<!-- Create -->
+<a class="text-secondary hover:bg-surface-container-high transition-colors flex items-center gap-4 py-3 px-6 cursor-pointer active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-body-md text-body-md">Create</span>
+</a>
+<!-- Profile -->
+<a class="text-secondary hover:bg-surface-container-high transition-colors flex items-center gap-4 py-3 px-6 cursor-pointer active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-body-md text-body-md">Profile</span>
+</a>
+<!-- Settings -->
+<a class="text-secondary hover:bg-surface-container-high transition-colors flex items-center gap-4 py-3 px-6 cursor-pointer active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</nav>
+<div class="px-6 pt-6 border-t border-outline-variant flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional high-end editorial portrait of a sophisticated person. The lighting is soft and directional, typical of a luxury fashion magazine. The background is a clean, neutral ivory tone that aligns with a warm minimalist aesthetic. The image is crisp and elegant, reflecting premium digital curation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIjmgQQVW4SCulMcC2ftKpJ5K_kdzZAzV333xhfVlg10TGMqI80_Qy_G2lITTkNUbNFziJ6f014BKGZM2JbkEDEEUJMoEOyYFz0DDI0OETrZ6fMV6RxBJdU1nv3oxU-W_v4I6iG0cObi3IhjxhZZTtw6Pkf0oQhV7M2nXI_60FmYrgRl9KkkhjZTp3WD8G1tfNl56OgD91izBYJf4uSf3jQeAQfbjhzbc5qt1uMGmgWAvT_gWGQPN6Zt5EmVhSwO9pyKFYtE_NKZp0">
+</div>
+<div>
+<p class="font-label-md text-label-md text-primary">Alex Rivera</p>
+<p class="font-caption text-caption text-secondary">Curator</p>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="lg:ml-64 min-h-screen">
+<!-- Top Search Bar (Authority: Style Guidance "TopAppBar") -->
+<header class="fixed top-0 right-0 left-0 lg:left-64 h-16 flex items-center px-margin-mobile md:px-margin-desktop bg-surface/80 backdrop-blur-xl z-40">
+<div class="flex items-center w-full max-w-2xl bg-surface-container-low border border-outline-variant rounded-full px-4 py-2 group focus-within:border-primary transition-all">
+<span class="material-symbols-outlined text-secondary group-focus-within:text-primary" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-full ml-3 text-body-md placeholder:text-outline" placeholder="Search stories, creators, collections..." type="text">
+</div>
+<div class="ml-auto flex items-center gap-6">
+<button class="material-symbols-outlined text-primary hover:opacity-70 transition-opacity" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-primary hover:opacity-70 transition-opacity" data-icon="person">person</button>
+</div>
+</header>
+<!-- Content Area -->
+<div class="pt-24 pb-stack-lg px-margin-mobile md:px-margin-desktop max-w-screen-xl mx-auto">
+<!-- Hero Header -->
+<section class="mb-stack-lg animate-fade-in">
+<h2 class="font-display-lg text-display-lg text-primary mb-2">Discover the Extraordinary</h2>
+<p class="font-body-lg text-body-lg text-secondary max-w-xl">A curated stream of visual narratives, global fashion archives, and contemporary art movements, selected for the discerning eye.</p>
+</section>
+<!-- Curated Collections (Horizontal Scroll) -->
+<section class="mb-stack-lg">
+<div class="flex justify-between items-end mb-stack-sm">
+<h3 class="font-label-md text-label-md uppercase tracking-widest text-primary">Curated Collections</h3>
+<a class="font-caption text-caption text-secondary hover:text-primary transition-colors underline underline-offset-4" href="#">View All</a>
+</div>
+<div class="flex gap-gutter overflow-x-auto pb-4 no-scrollbar">
+<!-- Collection Card 1 -->
+<div class="flex-shrink-0 w-80 group cursor-pointer">
+<div class="aspect-[16/9] overflow-hidden rounded-lg mb-3">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A high-end editorial shot of minimalist knitwear draped over a sculptural chair. The setting is a bright, sun-drenched architectural space with bone-white walls and soft shadows. The overall mood is peaceful and luxurious, emphasizing tactile textures and a warm minimalist palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR4CMUUJBZgwHrRR6wswpRYaC3eyKfdrPWqBJuOk1YKCIS1cdjyv_pIi4qq0j-OQ0FqzCXm9JSGtvecoGKNmS3pBoN6coEi3CM3NmA20TRhSocK49s1AbT6RSgRsmROkMuzMQhDVVFJBDtfu-yhRScvLVgAd8FeDdxiplAyCAzLle6LJoM40mk61bMGfGMXUxe3bFUTGDxJdqrNx9Y9j9QqM-rSnCJgzSeE-rC0Cm_z9TabkLIXVM0gPdTniMHPo1yuCsbTq-NpiOm">
+</div>
+<h4 class="font-body-md font-semibold text-primary">The Architecture of Silk</h4>
+<p class="font-caption text-secondary">24 Stories • Curated by Vogue Archive</p>
+</div>
+<!-- Collection Card 2 -->
+<div class="flex-shrink-0 w-80 group cursor-pointer">
+<div class="aspect-[16/9] overflow-hidden rounded-lg mb-3">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A cinematic evening shot of a modern Parisian apartment interior through an open window. Subtle warm light glows from within, contrasting with the cool blue hour outside. The composition is clean and focused, capturing a moment of quiet urban sophistication in an editorial style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbi3VCS2-J-arKjL_9uNDavU-JZHzF9E4xZR7OVMRsDQm_ha1-axbg_ZEK-ecF_jSoAIzrUVrEahxeHyPkBYxBgo3ruHctHrNWWfSysLYBoIeDOqkmzsm7WgLer-EU24gj8jhv7xTJl5QkL8JMUp8h_Msckpgxv_ZPqW4hvJreEXfrsOIc6soA-o8ibXU-fZMhZTsOUxb30esQWrw61J8oREmpv5588as_K615JZHgdTP25TYaJ4NAg-szBHzYtLFDCW79aiSd0CKO">
+</div>
+<h4 class="font-body-md font-semibold text-primary">Nocturnal Narratives</h4>
+<p class="font-caption text-secondary">18 Stories • Curated by STACK Editorial</p>
+</div>
+<!-- Collection Card 3 -->
+<div class="flex-shrink-0 w-80 group cursor-pointer">
+<div class="aspect-[16/9] overflow-hidden rounded-lg mb-3">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A minimalist fashion composition featuring a single high-quality leather accessory against a stark, ivory-colored background. The lighting is crisp and high-contrast, highlighting the fine grain of the material. The aesthetic is extremely clean, representing peak digital minimalism and luxury curation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaTMPpS6ZLRUOaisQSoDR8yMpIB6LtneoaHwJHhKUUKw1ob63g4y_RwYa9n5YxndYEVYmr1-kjDRAoh2P6YEDhthtG39URdTMuKYSwSm3O82x6ItD4wxNyS4T9XE_c1Qnit5ZrwAGoXFZgpJu0VW-b-MhXDSi9Y05gVNOaQlr4r_4HqVAPYGAxgHjAvGDtr9dd_o2dupX6xetCf66kw55tq9E0ExHSu3xsFKepqP_X5QD4TuE8beoRFrF2PjjNOM8vni32hFQ45qw9">
+</div>
+<h4 class="font-body-md font-semibold text-primary">The New Brutalism</h4>
+<p class="font-caption text-secondary">32 Stories • Curated by Mono Culture</p>
+</div>
+</div>
+</section>
+<!-- Masonry Grid: Trending Stories -->
+<section>
+<div class="flex justify-between items-end mb-stack-sm">
+<h3 class="font-label-md text-label-md uppercase tracking-widest text-primary">Trending Stories</h3>
+<div class="flex gap-4">
+<button class="font-label-md text-label-md text-primary border-b border-primary">All</button>
+<button class="font-label-md text-label-md text-secondary hover:text-primary transition-colors">Fashion</button>
+<button class="font-label-md text-label-md text-secondary hover:text-primary transition-colors">Art</button>
+<button class="font-label-md text-label-md text-secondary hover:text-primary transition-colors">Spaces</button>
+</div>
+</div>
+<div class="masonry-grid mt-6">
+<!-- Item 1 (Tall) -->
+<div class="masonry-item group cursor-pointer">
+<div class="relative overflow-hidden rounded-lg bg-surface-container">
+<img class="w-full transition-transform duration-1000 group-hover:scale-110" data-alt="A full-length fashion editorial shot of a model wearing avant-garde monochrome clothing in a minimalist concrete hallway. The lighting creates sharp, dramatic shadows that emphasize the architectural lines of the garment. The mood is cold yet highly sophisticated, in a high-fashion magazine style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYl9yGWk3Kbqzoe6SZTR9AvcSvOMVvD-yFE4OiIcBaXQ1zcS6yjWk5MzIKNPofyWzSr7di068O5eG6s5MUXriFHOQPEMUdSEKnKJMeavTN75RfLE59w3pgacIwUhUM65B8rBdA9A639dNJSNAQQYNoVICgsKR1W3Gqf-yfZIxhxzMRzWNlFH6IglWWCm4LtiFu6q75vGSbOjbvrJ3Ovbu7ldFg0E0obqVUFk_n4WMDPrOvvwwhvgCj3OVM7fhMgZ0qQ0yCZARkKzK1">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+<span class="text-white font-label-md text-[10px] uppercase tracking-widest mb-2">Editor's Pick</span>
+<h5 class="text-white font-headline-lg text-headline-lg-mobile leading-tight">Monochrome in Motion</h5>
+</div>
+</div>
+<div class="mt-3">
+<p class="font-label-md text-label-md text-primary">01. Avant-Garde</p>
+<p class="font-caption text-secondary mt-1">Exploring the intersection of movement and fabric in the 2024 Autumn collection.</p>
+</div>
+</div>
+<!-- Item 2 (Square) -->
+<div class="masonry-item group cursor-pointer">
+<div class="relative overflow-hidden rounded-lg aspect-square">
+<img class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" data-alt="A vibrant, high-fashion portrait with bold color blocking against a stark white studio background. The lighting is incredibly flat and bright, making the colors pop intensely. The model's expression is neutral and stoic, following the 'Kinfolk' editorial direction of quiet confidence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ-6UnCrbMyzRqBthfDZc_uwLVmmYPplaYgcStmzgbWxnX3SFqUOddExMKvrdDpucZqslpo8kz1OcJ1NxRJhidlXMs8JzpFiVVaBKu3A8rgnWE2WYbBVb9KTHMBm4GDaN6irL2nhnumuo3TT4ucn-vcuoT0ZwSajaTIcTjEJOjhsv50fkNHSUMOm2AlQNNEvOlR0hBwnMSwiXeLaml6kX-PUS5TweIoRFZ_3lxj8ZBbYrGDmPPyAWWivX-JUfxM2xFFhyHCvwOIaZW">
+</div>
+<div class="mt-3">
+<p class="font-label-md text-label-md text-primary">02. Color Theory</p>
+<p class="font-caption text-secondary mt-1">Saturated hues in a minimalist world.</p>
+</div>
+</div>
+<!-- Item 3 (Small) -->
+<div class="masonry-item group cursor-pointer">
+<div class="relative overflow-hidden rounded-lg aspect-[4/3]">
+<img class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" data-alt="A minimalist architectural detail of a spiral staircase in a luxury boutique. The ivory stone and black metal railings create a high-contrast, graphic composition. The shot is clean, balanced, and perfectly framed, evoking a sense of timeless sophistication and intentional design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4nG-I3H6vt-4Lh3OjuN6Dr-JZau4d3_Fcg0KVwD49EqzPryFvWRchKY9bpiskuaKW7dTkQZWJaIpKysUSGz0kj_FuW2rFREuccWgyd3UYr8IILUH4J9gKynzaIE0J_5Ky96pl3Fb4GYpnqnlAUY5spYvqCeuUh-d9WVIRghQTSgWQKF1Qfwg2tv11O6tuv7Ai1-Scmm2YxLdZElVnqBKP_wERXWmAzOz6i53JR9JmY23Rm9cRtNdv2v5mNaM-MAoyS7vSr3UeI-v1">
+</div>
+<div class="mt-3">
+<p class="font-label-md text-label-md text-primary">03. Still Life</p>
+<p class="font-caption text-secondary mt-1">The geometry of retail spaces.</p>
+</div>
+</div>
+<!-- Item 4 (Tall) -->
+<div class="masonry-item group cursor-pointer">
+<div class="relative overflow-hidden rounded-lg bg-surface-container">
+<img class="w-full transition-transform duration-1000 group-hover:scale-110" data-alt="A moody, high-end editorial image of a person sitting in a dimly lit library. The focus is on the rich textures of leather books and a heavy wool coat. Soft ambient light from a single source creates a warm, intimate atmosphere. The visual style is reminiscent of a 'Vogue' heritage feature." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuS6UVjtLyAM7Oew2dWbT_DZTFdL3oRNfcrhw8aPXmkorv32H6KtyQfRQ09lYOxUl6f8c6Spe5L-c1v-l6MPmllCl-xjxyNaYdD9ggbikQQUzO4vWFRmzzMQCJecVypaNQu70ddQiusW7xfa7Jy1_waUg0ugt7yTbD0Uz8w6oMGv5iN2YhVo_BR_-y7tOnGrW63R0t6Rm6c_jfG75ZNKI9LSLscdNTq7G_sE3_tNi-gubdl30n68KrWZnP7dJ2onMOGqHTpRgwvLf9">
+<div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<div class="mt-3">
+<p class="font-label-md text-label-md text-primary">04. Heritage</p>
+<p class="font-caption text-secondary mt-1">Revisiting classic tailoring for the modern digital era.</p>
+</div>
+</div>
+<!-- Item 5 (Medium) -->
+<div class="masonry-item group cursor-pointer">
+<div class="relative overflow-hidden rounded-lg aspect-[3/4]">
+<img class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" data-alt="A minimalist composition of high-end beauty products on a reflective surface. The color palette is restricted to ivory, beige, and black. Water ripples add a sense of movement and freshness to the shot. The lighting is bright and clean, epitomizing the luxury minimalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8zr1m5e0uZoFSbouS2OfUF2Z43uMal9ehjwm8W7pw1veRXhB-iGm5_sWMawkInkP85QcE61wqYyCBKWfWLw6OBwz-g-stUL_ban46CCu7eDprpnykJtnSGciFGqhrVPWbETlOeJBhmGOW2duFddnoomMvw3gNmFyc3HB-7fquspPlGgNv2LhswjysQ59qDXSsWWg0pVLyf46lyl3MZPEegUSjY5XKl9iKL1Q8MBqkS8ciWUnig0UQ5pPKf-Wgx8yAdV8SdBP3y-oD">
+</div>
+<div class="mt-3">
+<p class="font-label-md text-label-md text-primary">05. Pure Form</p>
+<p class="font-caption text-secondary mt-1">The aesthetics of wellness and self-care.</p>
+</div>
+</div>
+<!-- Item 6 (Square) -->
+<div class="masonry-item group cursor-pointer">
+<div class="relative overflow-hidden rounded-lg aspect-square">
+<img class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" data-alt="An abstract art installation featuring geometric shapes and shadows in a stark white gallery. The composition is extremely minimalist, focusing on the interplay of light and form. The mood is silent and contemplative, perfectly aligning with the warm minimalist brand identity of the platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHeXe-fz159T8INo9nvTnAsQrhNF9lGRpCYOEAZQAVWVDt8Kme8q7Iqh920fW12ydPyrWNSDIqee823DEpAW09GbPsHYIuNDkvx1x_1bLVY4YaVfwQmjthF5-_NXOSNP9h2gtFpoq5--85M06SOivvXUpCNndnAAGMcEdQG3Q_JM_HIMqzM_p5brUXNHmffQBB9eHrDsRISrx6FGN2V22wlUku7pF14pLKnCveigkydJia4z1hUI6QeEnLA8xA4ha1xQxIjS9xYh3i">
+</div>
+<div class="mt-3">
+<p class="font-label-md text-label-md text-primary">06. Abstract</p>
+<p class="font-caption text-secondary mt-1">Visual silences in contemporary art.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Popular Creators (Authority: Style Guidance) -->
+<section class="mt-stack-lg border-t border-outline-variant pt-stack-md">
+<div class="flex justify-between items-end mb-stack-sm">
+<h3 class="font-label-md text-label-md uppercase tracking-widest text-primary">Popular Creators</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Creator 1 -->
+<div class="flex items-center gap-4 p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img alt="Creator" class="w-full h-full object-cover" data-alt="A close-up editorial portrait of a creative individual with a focused, artistic expression. The background is a soft-focus studio environment. The lighting is professional and flattering, capturing fine details in a way that feels premium and authentic to the STACK SOCIAL brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-yBySLEDmbwz6rgYyyVI78v1dvmmVy9xAWkSVvAIGlj6WDxFqcFI_08XJHGRKHJhe56wxKoItpPOe5D0tKh2NcuLJKiN3FyVnBr6QLxFNMAXjUuoh9GaEOkBuuDRa9BOv04qjKfbNreSqz0dyweEKZRcDkBW6bUPSBOGjZ_EOfxAYFKdcgWb70yD_Jrm_GxLf0DJkfG_hoWbjfcQ05grOV9zqQViCmHcxwwaBaYfvB6hjXEeKYkmwHQ-BNYLnrDVXCaNMIYWq6Zho">
+</div>
+<div>
+<p class="font-body-md font-semibold text-primary">Julian V.</p>
+<p class="font-caption text-secondary">Creative Director</p>
+</div>
+<button class="ml-auto text-primary text-label-md font-bold">Follow</button>
+</div>
+<!-- Creator 2 -->
+<div class="flex items-center gap-4 p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img alt="Creator" class="w-full h-full object-cover" data-alt="A professional headshot of a female artist in a bright, airy studio space. She is smiling warmly at the camera, projecting approachable luxury. The color palette is dominated by light neutrals and soft tones, maintaining visual consistency with a minimalist and sophisticated UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_Qu-lYSnwWdjprAwhfZ2UmUTX0jZarS379ENLp0qz-Fn7Yp9spTyJpkAJFi37KtgOGe4O6TMXCmE-tMcf2Kmarmtifbblqvzhdzf28P-qMfjj8gfUg2-QdUQQxpEMOA8Qs1MO1d8yys5A_agHgVnrmaO5y-3nzy9_MXzaIWLjpf8KoRykXyeYF0QoJbdpQahB8pb_Db5L2xtyCnPPdKyyJniDBdmhnLXwWaF7nvFpcIBlHlS344PsKyPUPLh-dVWxNAPNJPnqowey">
+</div>
+<div>
+<p class="font-body-md font-semibold text-primary">Elena Rose</p>
+<p class="font-caption text-secondary">Visual Artist</p>
+</div>
+<button class="ml-auto text-primary text-label-md font-bold">Follow</button>
+</div>
+<!-- Creator 3 -->
+<div class="flex items-center gap-4 p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img alt="Creator" class="w-full h-full object-cover" data-alt="A portrait of a male fashion designer in a sophisticated, minimalist workshop. He is surrounded by high-quality fabrics and sketches. The image has a warm, cinematic quality with soft lighting that highlights the textures of his surroundings, reflecting an editorial lifestyle aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJy71c3pYYasN8siOAhJeKANUDTwl4ummnYNRcgrvQttAYO4_c62yywNQT-ggZUC6S3kbrj2yWGnylb8sqER3LZD1J9GxfSgaaWrO0GOUKHno1uz4m1ReTinQ2karq0l6XwZwXLjdJ56qxOnni_OUfB8wg4KF3FG1ws5_p5owhDDc0pztIog-4aysHY0KMPQGg_kGaevRKJVvs_T-M0p_xqsGVqTAx_ItJeVotN4n23vkdIn_yW4NIpRgAahZSzSXtoveO8HSR72vT">
+</div>
+<div>
+<p class="font-body-md font-semibold text-primary">Marcus K.</p>
+<p class="font-caption text-secondary">Fashion Designer</p>
+</div>
+<button class="ml-auto text-primary text-label-md font-bold">Follow</button>
+</div>
+<!-- Creator 4 -->
+<div class="flex items-center gap-4 p-4 hover:bg-surface-container-low transition-colors rounded-lg cursor-pointer">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img alt="Creator" class="w-full h-full object-cover" data-alt="A high-contrast editorial portrait of a woman with a strong, elegant pose. The lighting is dramatic, casting deep shadows that emphasize her features and sophisticated attire. The background is a clean, dark grey, creating a timeless and luxurious feel consistent with premium curation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWsV0MxV2TvpDCBw7bkA9jtfkcpor4x32_0VgmzuFQTmw228_KcGk_KZniE-VbaFZKHHnDnzcdqOHGUsgLZqXRZnunAi2gsxYrysd52DJlnuosS0wEwfkk0qQKxx_mlFzxKWol5ZmUNaoGAeTqkIN2exS9JfKrVwgNKVm1175G8I8kmqsGnfGDZNbblN7g3Va4XD_WzWT7usASbUi9IkC63zOFPTW35vC7pCONkJixvYD34FgweeqalTdY5nkGcifkDbMl39PBipjg">
+</div>
+<div>
+<p class="font-body-md font-semibold text-primary">Sasha Kim</p>
+<p class="font-caption text-secondary">Photographer</p>
+</div>
+<button class="ml-auto text-primary text-label-md font-bold">Follow</button>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer (Authority: Shared Components JSON) -->
+<footer class="w-full py-stack-md border-t border-outline-variant bg-surface mt-stack-lg">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-mobile md:px-margin-desktop gap-gutter">
+<div class="flex flex-col items-center md:items-start">
+<span class="font-label-md text-label-md text-primary">STACK SOCIAL</span>
+<p class="font-caption text-caption text-secondary mt-2">© 2024 STACK SOCIAL</p>
+</div>
+<div class="flex gap-8 mt-4 md:mt-0">
+<a class="font-caption text-caption uppercase tracking-widest text-secondary hover:text-primary transition-colors underline-offset-4 hover:underline" href="#">About</a>
+<a class="font-caption text-caption uppercase tracking-widest text-secondary hover:text-primary transition-colors underline-offset-4 hover:underline" href="#">Privacy</a>
+<a class="font-caption text-caption uppercase tracking-widest text-secondary hover:text-primary transition-colors underline-offset-4 hover:underline" href="#">Terms</a>
+<a class="font-caption text-caption uppercase tracking-widest text-secondary hover:text-primary transition-colors underline-offset-4 hover:underline" href="#">Editorial Guidelines</a>
+</div>
+</div>
+</footer>
+</main>
+<script>
+        // Micro-interaction: Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 20) {
+                header.classList.add('shadow-sm', 'border-b', 'border-outline-variant');
+            } else {
+                header.classList.remove('shadow-sm', 'border-b', 'border-outline-variant');
+            }
+        });
+
+        // Simulating infinite scroll for demonstration
+        let loading = false;
+        window.addEventListener('scroll', () => {
+            if (loading) return;
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+                loading = true;
+                // In a real app, this would fetch more items
+                setTimeout(() => { loading = false; }, 2000);
+            }
+        });
+    </script>
+</body></html>
+
