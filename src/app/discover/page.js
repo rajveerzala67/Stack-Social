@@ -71,7 +71,7 @@ export default function Discover() {
       // 1. Build Base Query first
       let postsQuery = supabase
         .from("posts")
-        .select("*, author:profiles!author_id(id, display_name, username, avatar_url, is_private)")
+        .select("*, author:profiles!author_id(id, display_name, username, avatar_url, is_private), likes:likes(count), comments:comments(count)")
         .eq("is_archived", false);
 
       // Search Query
@@ -130,26 +130,20 @@ export default function Discover() {
         return true;
       });
 
-      // 3. Parallelize Step 2 queries (likes, bookmarks, counts) for the filtered posts
+      // 3. Parallelize Step 2 queries (user likes, user bookmarks) for the filtered posts
       if (filteredPosts.length > 0) {
         const postIds = filteredPosts.map((p) => p.id);
 
         const [
           userLikesRes,
-          userBookmarksRes,
-          likesDataRes,
-          commentsDataRes
+          userBookmarksRes
         ] = await Promise.all([
           user ? supabase.from("likes").select("post_id").eq("user_id", user.id).in("post_id", postIds) : Promise.resolve({ data: [] }),
-          user ? supabase.from("bookmarks").select("post_id").eq("user_id", user.id).in("post_id", postIds) : Promise.resolve({ data: [] }),
-          supabase.from("likes").select("post_id").in("post_id", postIds),
-          supabase.from("comments").select("post_id").in("post_id", postIds)
+          user ? supabase.from("bookmarks").select("post_id").eq("user_id", user.id).in("post_id", postIds) : Promise.resolve({ data: [] })
         ]);
 
         const userLikes = userLikesRes.data || [];
         const userBookmarks = userBookmarksRes.data || [];
-        const likesData = likesDataRes.data || [];
-        const commentsData = commentsDataRes.data || [];
 
         const likedMap = {};
         userLikes.forEach((l) => (likedMap[l.post_id] = true));
@@ -159,16 +153,14 @@ export default function Discover() {
         userBookmarks.forEach((b) => (bookmarkedMap[b.post_id] = true));
         setBookmarkedPosts((prev) => ({ ...prev, ...bookmarkedMap }));
 
+        // Populate counts directly from count relations
         const counts = {};
-        likesData.forEach((l) => {
-          counts[l.post_id] = (counts[l.post_id] || 0) + 1;
+        const cCounts = {};
+        filteredPosts.forEach((post) => {
+          counts[post.id] = post.likes?.[0]?.count || 0;
+          cCounts[post.id] = post.comments?.[0]?.count || 0;
         });
         setLikeCounts((prev) => ({ ...prev, ...counts }));
-
-        const cCounts = {};
-        commentsData.forEach((c) => {
-          cCounts[c.post_id] = (cCounts[c.post_id] || 0) + 1;
-        });
         setCommentCounts((prev) => ({ ...prev, ...cCounts }));
       }
 
@@ -201,14 +193,21 @@ export default function Discover() {
 
   // Animate masonry cards
   useEffect(() => {
-    if (loading || posts.length === 0) return;
+    if (loading || posts.length === 0 || !pageRef.current) return;
     const ctx = gsap.context(() => {
+      const isMobile = window.innerWidth < 768;
       gsap.fromTo(
         ".masonry-card",
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, stagger: 0.05, duration: 0.7, ease: "power3.out" }
+        { opacity: 0, y: isMobile ? 15 : 30 },
+        {
+          opacity: 1,
+          y: 0,
+          stagger: isMobile ? 0.01 : 0.03,
+          duration: isMobile ? 0.35 : 0.5,
+          ease: "power3.out"
+        }
       );
-    }, pageRef);
+    }, pageRef.current);
     return () => ctx.revert();
   }, [loading, posts]);
 
@@ -414,7 +413,7 @@ export default function Discover() {
                     <span className="text-[10px] text-secondary truncate">@{post.author?.username}</span>
                   </div>
                 </div>
-                <p className="text-xs text-primary line-clamp-2 leading-relaxed">{post.caption}</p>
+                <p className="text-xs text-primary line-clamp-2 leading-relaxed break-words">{post.caption}</p>
               </div>
             </article>
           ))}

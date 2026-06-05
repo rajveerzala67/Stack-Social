@@ -378,7 +378,7 @@ export default function PostDetailModal({
                 <img src={post.author?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author?.display_name || "U")}&background=1A1A1A&color=fff`}
                   className="w-8 h-8 rounded-full object-cover shrink-0" alt="" />
                 <div className="text-left">
-                  <p className="text-xs text-primary leading-normal">
+                  <p className="text-xs text-primary leading-normal break-words whitespace-pre-wrap">
                     <span className="font-bold mr-1.5">{post.author?.display_name}</span>
                     {post.caption}
                   </p>
@@ -401,7 +401,7 @@ export default function PostDetailModal({
                     <img src={comment.author?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(comment.author?.display_name || "U")}&background=1A1A1A&color=fff`}
                       className="w-8 h-8 rounded-full object-cover shrink-0" alt="" />
                     <div className="text-left flex-1 min-w-0">
-                      <p className="text-xs text-primary leading-normal">
+                      <p className="text-xs text-primary leading-normal break-words whitespace-pre-wrap">
                         <span className="font-bold mr-1.5">{comment.author?.display_name}</span>
                         {comment.content}
                       </p>

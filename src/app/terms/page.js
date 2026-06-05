@@ -25,7 +25,7 @@ export default function Terms() {
 
         {/* Title */}
         <div className="space-y-6 mb-16">
-          <h1 className="font-display-lg text-[42px] md:text-[56px] leading-[1.05] text-primary">
+          <h1 className="font-display-lg text-[32px] sm:text-[38px] md:text-[56px] leading-[1.05] text-primary">
             Curator <br />
             <span className="italic">Agreement & Terms</span>
           </h1>

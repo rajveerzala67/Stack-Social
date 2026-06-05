@@ -20,6 +20,63 @@ const EMOJIS = [
   "💡", "💯", "🌟", "🌈", "☀️", "❄️", "🎈", "🎁", "🎨", "📷", "✈️", "🌍"
 ];
 
+// Client-side image compression utility
+const compressImage = (file, maxWidth = 1200, maxHeight = 1200, quality = 0.75) => {
+  return new Promise((resolve) => {
+    if (!file || !file.type.startsWith("image/") || file.type === "image/gif") {
+      resolve(file);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height *= maxWidth / width;
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width *= maxHeight / height;
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name || `msg-${Date.now()}.jpg`, {
+                type: "image/jpeg",
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            } else {
+              resolve(file);
+            }
+          },
+          "image/jpeg",
+          quality
+        );
+      };
+      img.onerror = () => resolve(file);
+    };
+    reader.onerror = () => resolve(file);
+  });
+};
+
 function MessagesContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -73,7 +130,10 @@ function MessagesContent() {
 
   // Load conversations
   const loadConversations = useCallback(async (selectRecipientId = null) => {
-    if (!user) return;
+    if (!user) {
+      setLoadingConvs(false);
+      return;
+    }
     setLoadingConvs(true);
 
     try {
@@ -411,13 +471,16 @@ function MessagesContent() {
         setConversations((prev) => prev.map((c) => (c.id === "temp" ? realConv : c)));
       }
 
-      const fileExt = file.name.split(".").pop();
+      // Compress image if it is an image (max 1080x1350, 75% quality)
+      const isImg = file.type.startsWith("image/");
+      const compressedFile = isImg ? await compressImage(file, 1080, 1350, 0.75) : file;
+      const fileExt = isImg ? "jpg" : file.name.split(".").pop();
       const filePath = `${user.id}/${Date.now()}.${fileExt}`;
       const bucket = "posts"; // Using the posts bucket to store attachments
 
       const { error: uploadError } = await supabase.storage
         .from(bucket)
-        .upload(filePath, file);
+        .upload(filePath, compressedFile, { contentType: isImg ? "image/jpeg" : file.type });
 
       if (uploadError) throw uploadError;
 
@@ -661,7 +724,7 @@ function MessagesContent() {
   }, []);
 
   return (
-    <div className="flex w-full h-[calc(100vh-8rem)] lg:h-screen overflow-hidden">
+    <div className="flex w-full min-w-0 h-[calc(100vh-8rem)] lg:h-screen overflow-hidden">
       {/* Conversation List (Left Pane) */}
       <section className={`h-full flex-col border-r border-outline-variant bg-surface-container-lowest shrink-0 ${activeConv ? "hidden md:flex md:w-[380px]" : "w-full md:w-[380px] flex"}`}>
         <div className="h-20 flex items-center justify-between px-6 border-b border-outline-variant">
@@ -760,7 +823,7 @@ function MessagesContent() {
       </section>
 
       {/* Active Chat Area (Right Pane) */}
-      <section className={`flex-1 h-full flex-col bg-background relative border-l border-outline-variant ${activeConv ? "flex" : "hidden md:flex"}`}>
+      <section className={`flex-1 min-w-0 h-full flex-col bg-background relative md:border-l border-outline-variant ${activeConv ? "flex" : "hidden md:flex"}`}>
         {activeConv ? (
           <>
             {/* Chat Header */}
@@ -821,7 +884,7 @@ function MessagesContent() {
                     >
                       {/* Text */}
                       {msg.type === "text" && (
-                        <div className={`p-4 rounded-xl text-body-md ${
+                        <div className={`p-4 rounded-xl text-body-md break-words whitespace-pre-wrap ${
                           isMe
                             ? "bg-primary text-on-primary rounded-br-none"
                             : "bg-surface-container-lowest border border-outline-variant text-primary rounded-bl-none shadow-sm"
@@ -938,25 +1001,28 @@ function MessagesContent() {
             <footer className="p-3 md:p-stack-md bg-background border-t border-outline-variant/20">
               {isRecordingAudio ? (
                 /* Recording Mode UI */
-                <div className="flex items-center justify-between max-w-container-max mx-auto bg-red-500/10 border border-red-500/30 rounded-2xl p-3 shadow-sm text-red-600">
-                  <div className="flex items-center gap-3">
-                    <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping"></span>
-                    <span className="font-label-md text-xs uppercase tracking-widest font-bold">Recording voice note...</span>
-                    <span className="font-body-md text-xs font-bold px-2 py-0.5 bg-red-500/15 rounded-md text-red-600">{formatDuration(audioDuration)}</span>
+                <div className="flex items-center justify-between max-w-container-max mx-auto bg-red-500/10 border border-red-500/30 rounded-2xl p-2 sm:p-3 shadow-sm text-red-600">
+                  <div className="flex items-center gap-1.5 sm:gap-3">
+                    <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping shrink-0"></span>
+                    <span className="font-label-md text-xs uppercase tracking-widest font-bold hidden sm:inline">Recording voice note...</span>
+                    <span className="font-label-md text-xs uppercase tracking-widest font-bold sm:hidden">Recording...</span>
+                    <span className="font-body-md text-xs font-bold px-2 py-0.5 bg-red-500/15 rounded-md text-red-600 shrink-0">{formatDuration(audioDuration)}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
                     <button 
                       onClick={() => stopAudioRecording(true)} 
-                      className="p-2.5 hover:bg-red-500/10 text-red-600 rounded-xl transition-colors cursor-pointer"
+                      className="p-2 hover:bg-red-500/10 text-red-600 rounded-xl transition-colors cursor-pointer shrink-0"
                       title="Cancel Recording"
                     >
                       <Trash2 size={18} />
                     </button>
                     <button 
                       onClick={() => stopAudioRecording(false)} 
-                      className="bg-red-600 hover:bg-red-500 text-white font-bold px-5 py-2 rounded-xl transition-all active:scale-95 text-xs uppercase tracking-widest cursor-pointer flex items-center gap-1.5"
+                      className="bg-red-600 hover:bg-red-500 text-white font-bold px-3 py-2 sm:px-5 sm:py-2 rounded-xl transition-all active:scale-95 text-xs uppercase tracking-widest cursor-pointer flex items-center gap-1.5 shrink-0"
                     >
-                      <Square size={12} className="fill-current" /> Stop & Send
+                      <Square size={12} className="fill-current shrink-0" />
+                      <span className="hidden sm:inline">Stop & Send</span>
+                      <span className="sm:hidden">Send</span>
                     </button>
                   </div>
                 </div>
@@ -977,7 +1043,7 @@ function MessagesContent() {
                       }
                     }}
                     className="flex-1 py-2 md:py-3 px-1 md:px-2 bg-transparent border-none focus:ring-0 text-body-md placeholder:text-outline resize-none max-h-32 overflow-y-auto no-scrollbar outline-none text-primary min-w-0"
-                    placeholder="Compose a message..."
+                    placeholder="Message..."
                     rows={1}
                   />
                   
@@ -1088,13 +1154,35 @@ function MessagesContent() {
   );
 }
 
-export default function Messages() {
+function MessagesSkeleton() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
+    <div className="flex h-screen bg-brand-ivory animate-pulse">
+      {/* Sidebar List skeleton */}
+      <div className="w-80 border-r border-outline-variant/30 flex flex-col bg-surface py-4 px-4 space-y-4">
+        <div className="h-10 bg-surface-container rounded-sm w-3/4" />
+        <div className="space-y-3 flex-1">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="flex items-center gap-3 py-2 border-b border-outline-variant/10">
+              <div className="w-10 h-10 rounded-full bg-surface-container" />
+              <div className="flex-1 space-y-2">
+                <div className="h-3 bg-surface-container rounded-sm w-1/2" />
+                <div className="h-2.5 bg-surface-container-low rounded-sm w-3/4" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Empty Chat pane */}
+      <div className="flex-1 flex flex-col bg-brand-ivory items-center justify-center">
         <Loader2 className="animate-spin text-primary" size={32} />
       </div>
-    }>
+    </div>
+  );
+}
+
+export default function Messages() {
+  return (
+    <Suspense fallback={<MessagesSkeleton />}>
       <MessagesContent />
     </Suspense>
   );

@@ -8,7 +8,7 @@ import {
   Phone, Video, PhoneOff, RotateCw, Mic, MicOff, VideoOff, 
   Volume2, Maximize2, Minimize2, Settings, Share2, Wifi, Loader2, Play 
 } from "lucide-react";
-import { Room, RoomEvent, ConnectionQuality } from "livekit-client";
+
 
 const CallContext = createContext({
   activeCall: null, // { id, callerId, calleeId, type, status, isIncoming, conversationId }
@@ -63,6 +63,13 @@ export function CallProvider({ children }) {
   const timerIntervalRef = useRef(null);
   const ringToneRef = useRef(null);
   const canvasAnimIdRef = useRef(null);
+
+  const activeCallRef = useRef(null);
+  const connectingCallIdRef = useRef(null);
+
+  useEffect(() => {
+    activeCallRef.current = activeCall;
+  }, [activeCall]);
 
   // Synth audio ring tones using Web Audio API (cross-browser, self-contained)
   const startRingtone = useCallback((isOutgoing = false) => {
@@ -161,54 +168,7 @@ export function CallProvider({ children }) {
     }
   }, [selectedAudioDevice, selectedVideoDevice]);
 
-  // Setup devices listener
-  useEffect(() => {
-    updateDeviceList();
-    if (typeof navigator !== "undefined" && navigator.mediaDevices) {
-      navigator.mediaDevices.addEventListener("devicechange", updateDeviceList);
-      return () => {
-        navigator.mediaDevices.removeEventListener("devicechange", updateDeviceList);
-      };
-    }
-  }, [updateDeviceList]);
 
-  // Listen for incoming call events via Supabase Realtime
-  useEffect(() => {
-    if (!user) return;
-
-    const channel = supabase.channel(`call-signaling:${user.id}`);
-
-    channel
-      .on("broadcast", { event: "call-offer" }, async ({ payload }) => {
-        // Query the calls table to verify the status is still ringing
-        const { data: callData } = await supabase
-          .from("calls")
-          .select("*, caller:profiles!caller_id(id, display_name, username, avatar_url)")
-          .eq("id", payload.callId)
-          .single();
-
-        if (callData && callData.status === "ringing") {
-          setActiveCall({
-            id: callData.id,
-            caller: callData.caller,
-            callerId: callData.caller_id,
-            calleeId: callData.receiver_id,
-            type: callData.call_type === "audio" ? "voice" : "video",
-            status: "ringing",
-            isIncoming: true,
-            conversationId: payload.conversationId,
-          });
-
-          // Play incoming electronic ring
-          startRingtone(false);
-        }
-      })
-      .subscribe();
-
-    return () => {
-      channel.unsubscribe();
-    };
-  }, [user, startRingtone]);
 
   // Cleanup helper
   const cleanupCall = useCallback(() => {
@@ -235,9 +195,14 @@ export function CallProvider({ children }) {
     }
 
     if (signalingChannelRef.current) {
-      signalingChannelRef.current.unsubscribe();
+      const channelToUnsubscribe = signalingChannelRef.current;
       signalingChannelRef.current = null;
+      setTimeout(() => {
+        channelToUnsubscribe.unsubscribe();
+      }, 2000);
     }
+
+    connectingCallIdRef.current = null;
 
     setLocalStream(null);
     setRemoteStream(null);
@@ -334,7 +299,9 @@ export function CallProvider({ children }) {
                   event: "call-offer",
                   payload: { callId: callSession.id, conversationId, type },
                 });
-                inviteChannel.unsubscribe();
+                setTimeout(() => {
+                  inviteChannel.unsubscribe();
+                }, 2000);
               }
             });
           }
@@ -461,7 +428,9 @@ export function CallProvider({ children }) {
             event: "call-declined",
             payload: {},
           });
-          callChannel.unsubscribe();
+          setTimeout(() => {
+            callChannel.unsubscribe();
+          }, 2000);
         }
       });
 
@@ -536,6 +505,9 @@ export function CallProvider({ children }) {
 
   // Main Stream setup (LiveKit connection with Simulator fallback)
   const connectToStream = async (callId, callType) => {
+    if (connectingCallIdRef.current === callId) return;
+    connectingCallIdRef.current = callId;
+
     try {
       // 1. Fetch token from server endpoint
       const identity = user.id;
@@ -618,6 +590,7 @@ export function CallProvider({ children }) {
         setConnectionQuality("good");
       } else {
         // Run Real LiveKit Mode
+        const { Room, RoomEvent, ConnectionQuality } = await import("livekit-client");
         const room = new Room({
           adaptiveStream: true,
           dynacast: true,
@@ -830,6 +803,191 @@ export function CallProvider({ children }) {
       }
     }
   };
+
+  // Setup devices listener
+  useEffect(() => {
+    updateDeviceList();
+    if (typeof navigator !== "undefined" && navigator.mediaDevices) {
+      navigator.mediaDevices.addEventListener("devicechange", updateDeviceList);
+      return () => {
+        navigator.mediaDevices.removeEventListener("devicechange", updateDeviceList);
+      };
+    }
+  }, [updateDeviceList]);
+
+  // Listen for incoming call events via Supabase Realtime (Broadcast + Postgres INSERT changes fallback)
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase.channel(`call-signaling:${user.id}`);
+
+    channel
+      .on("broadcast", { event: "call-offer" }, async ({ payload }) => {
+        // Query the calls table to verify the status is still ringing
+        const { data: callData } = await supabase
+          .from("calls")
+          .select("*, caller:profiles!caller_id(id, display_name, username, avatar_url)")
+          .eq("id", payload.callId)
+          .single();
+
+        if (callData && callData.status === "ringing") {
+          setActiveCall((curr) => {
+            if (curr && curr.id === callData.id) return curr;
+            if (curr && curr.status !== "ended" && curr.status !== "rejected" && curr.status !== "missed") {
+              return curr;
+            }
+
+            // Play incoming electronic ring
+            startRingtone(false);
+
+            return {
+              id: callData.id,
+              caller: callData.caller,
+              callerId: callData.caller_id,
+              calleeId: callData.receiver_id,
+              type: callData.call_type === "audio" ? "voice" : "video",
+              status: "ringing",
+              isIncoming: true,
+              conversationId: payload.conversationId,
+            };
+          });
+        }
+      })
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "calls",
+          filter: `receiver_id=eq.${user.id}`,
+        },
+        async (payload) => {
+          const newCall = payload.new;
+          if (newCall && newCall.status === "ringing") {
+            setActiveCall((curr) => {
+              if (curr && curr.id === newCall.id) return curr;
+              if (curr && curr.status !== "ended" && curr.status !== "rejected" && curr.status !== "missed") {
+                return curr;
+              }
+
+              // Fetch details asynchronously
+              (async () => {
+                try {
+                  const [callerRes, convId] = await Promise.all([
+                    supabase
+                      .from("profiles")
+                      .select("id, display_name, username, avatar_url")
+                      .eq("id", newCall.caller_id)
+                      .single(),
+                    (async () => {
+                      // Find existing direct conversation ID
+                      const { data: memberData } = await supabase
+                        .from("conversation_members")
+                        .select("conversation_id")
+                        .eq("user_id", newCall.caller_id);
+
+                      const callerConvIds = (memberData || []).map((m) => m.conversation_id);
+
+                      if (callerConvIds.length > 0) {
+                        const { data: calleeMemberData } = await supabase
+                          .from("conversation_members")
+                          .select("conversation_id")
+                          .eq("user_id", user.id)
+                          .in("conversation_id", callerConvIds);
+
+                        if (calleeMemberData && calleeMemberData.length > 0) {
+                          return calleeMemberData[0].conversation_id;
+                        }
+                      }
+                      return null;
+                    })(),
+                  ]);
+
+                  const callerData = callerRes.data;
+
+                  setActiveCall((latest) => {
+                    if (latest && latest.id === newCall.id) return latest;
+                    if (latest && latest.status !== "ended" && latest.status !== "rejected" && latest.status !== "missed") {
+                      return latest;
+                    }
+
+                    // Play incoming electronic ring
+                    startRingtone(false);
+
+                    return {
+                      id: newCall.id,
+                      caller: callerData,
+                      callerId: newCall.caller_id,
+                      calleeId: newCall.receiver_id,
+                      type: newCall.call_type === "audio" ? "voice" : "video",
+                      status: "ringing",
+                      isIncoming: true,
+                      conversationId: convId,
+                    };
+                  });
+                } catch (err) {
+                  console.error("Error setting up incoming call from postgres insert:", err);
+                }
+              })();
+
+              return curr;
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      channel.unsubscribe();
+    };
+  }, [user, startRingtone]);
+
+  // Listen for updates to the active call status in the database (e.g. accepted, rejected, ended)
+  useEffect(() => {
+    if (!user || !activeCall?.id) return;
+
+    const callId = activeCall.id;
+    const channel = supabase.channel(`active-call-db:${callId}`);
+
+    channel
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "calls",
+          filter: `id=eq.${callId}`,
+        },
+        async (payload) => {
+          const updatedCall = payload.new;
+          if (!updatedCall) return;
+
+          console.log("Active call Postgres update:", updatedCall.status, updatedCall);
+          const currentCall = activeCallRef.current;
+          if (!currentCall || currentCall.id !== callId) return;
+
+          if (updatedCall.status === "accepted" && currentCall.status === "ringing") {
+            // Callee accepted the call
+            if (!currentCall.isIncoming) {
+              stopRingtone();
+              await connectToStream(callId, currentCall.type);
+            }
+          } else if (
+            updatedCall.status === "rejected" ||
+            updatedCall.status === "ended" ||
+            updatedCall.status === "missed"
+          ) {
+            // Call was ended, rejected, or missed by either party
+            cleanupCall();
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      channel.unsubscribe();
+    };
+  }, [user, activeCall?.id, stopRingtone, cleanupCall]);
 
   return (
     <CallContext.Provider

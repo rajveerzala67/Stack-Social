@@ -78,7 +78,10 @@ function HomeFeedContent() {
 
   // Fetch posts from DB
   const fetchPosts = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     try {
       // Parallelize all primary independent database queries
       const [
@@ -91,7 +94,7 @@ function HomeFeedContent() {
       ] = await Promise.all([
         supabase
           .from("posts")
-          .select("*, author:profiles!author_id(id, display_name, username, avatar_url, role, is_private)")
+          .select("*, author:profiles!author_id(id, display_name, username, avatar_url, role, is_private), likes:likes(count), comments:comments(count)")
           .eq("type", "post")
           .eq("is_archived", false)
           .order("created_at", { ascending: false })
@@ -156,26 +159,15 @@ function HomeFeedContent() {
       userBookmarks.forEach((b) => (bookmarkedMap[b.post_id] = true));
       setBookmarkedPosts(bookmarkedMap);
 
-      // Fetch like and comment counts for filtered posts in parallel
-      const postIds = filteredPosts.map((p) => p.id);
-      if (postIds.length > 0) {
-        const [likesRes, commentsRes] = await Promise.all([
-          supabase.from("likes").select("post_id").in("post_id", postIds),
-          supabase.from("comments").select("post_id").in("post_id", postIds)
-        ]);
-
-        const counts = {};
-        (likesRes.data || []).forEach((l) => {
-          counts[l.post_id] = (counts[l.post_id] || 0) + 1;
-        });
-        setLikeCounts(counts);
-
-        const cCounts = {};
-        (commentsRes.data || []).forEach((c) => {
-          cCounts[c.post_id] = (cCounts[c.post_id] || 0) + 1;
-        });
-        setCommentCounts(cCounts);
-      }
+      // Populate like and comment counts directly from count relations
+      const counts = {};
+      const cCounts = {};
+      filteredPosts.forEach((post) => {
+        counts[post.id] = post.likes?.[0]?.count || 0;
+        cCounts[post.id] = post.comments?.[0]?.count || 0;
+      });
+      setLikeCounts(counts);
+      setCommentCounts(cCounts);
 
       setPosts(filteredPosts.slice(0, 20));
 
@@ -208,8 +200,12 @@ function HomeFeedContent() {
   }, [user]);
 
   useEffect(() => {
-    fetchPosts();
-  }, [fetchPosts]);
+    if (user) {
+      fetchPosts();
+    } else {
+      setLoading(false);
+    }
+  }, [fetchPosts, user]);
 
   // Load deep-linked post if present in URL
   useEffect(() => {
@@ -237,11 +233,26 @@ function HomeFeedContent() {
 
   // Animate on load
   useEffect(() => {
-    if (loading || posts.length === 0) return;
+    if (loading || posts.length === 0 || !containerRef.current) return;
     const ctx = gsap.context(() => {
-      gsap.from(".story-circle", { scale: 0.8, opacity: 0, y: 10, stagger: 0.08, duration: 0.6, ease: "back.out(1.7)" });
-      gsap.from(".magazine-post", { y: 40, opacity: 0, stagger: 0.15, duration: 0.8, ease: "power3.out", delay: 0.2 });
-    }, containerRef);
+      const isMobile = window.innerWidth < 768;
+      gsap.from(".story-circle", {
+        scale: 0.8,
+        opacity: 0,
+        y: 10,
+        stagger: isMobile ? 0.02 : 0.05,
+        duration: isMobile ? 0.3 : 0.5,
+        ease: "back.out(1.7)"
+      });
+      gsap.from(".magazine-post", {
+        y: isMobile ? 20 : 40,
+        opacity: 0,
+        stagger: isMobile ? 0.03 : 0.08,
+        duration: isMobile ? 0.4 : 0.6,
+        ease: "power3.out",
+        delay: isMobile ? 0.05 : 0.1
+      });
+    }, containerRef.current);
     return () => ctx.revert();
   }, [loading, posts]);
 
@@ -396,7 +407,7 @@ function HomeFeedContent() {
               {/* Content */}
               <div className="p-stack-md space-y-3">
                 {post.caption && (
-                  <p className="font-body-md text-body-md text-primary leading-relaxed">{post.caption}</p>
+                  <p className="font-body-md text-body-md text-primary leading-relaxed break-words whitespace-pre-wrap">{post.caption}</p>
                 )}
 
                 {/* Action Bar */}
@@ -465,13 +476,18 @@ function HomeFeedContent() {
   );
 }
 
+function HomeFeedSkeleton() {
+  return (
+    <div className="max-w-screen-xl mx-auto px-margin-mobile md:px-margin-desktop py-6">
+      <StoriesSkeleton />
+      <PostsSkeleton />
+    </div>
+  );
+}
+
 export default function HomeFeed() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    }>
+    <Suspense fallback={<HomeFeedSkeleton />}>
       <HomeFeedContent />
     </Suspense>
   );

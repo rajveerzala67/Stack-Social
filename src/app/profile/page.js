@@ -9,6 +9,63 @@ import { supabase } from "@/lib/supabaseClient";
 import StoryViewer from "@/components/StoryViewer";
 import PostDetailModal from "@/components/PostDetailModal";
 
+// Client-side image compression utility
+const compressImage = (file, maxWidth = 1200, maxHeight = 1200, quality = 0.75) => {
+  return new Promise((resolve) => {
+    if (!file || !file.type.startsWith("image/") || file.type === "image/gif") {
+      resolve(file);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height *= maxWidth / width;
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width *= maxHeight / height;
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name || `img-${Date.now()}.jpg`, {
+                type: "image/jpeg",
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            } else {
+              resolve(file);
+            }
+          },
+          "image/jpeg",
+          quality
+        );
+      };
+      img.onerror = () => resolve(file);
+    };
+    reader.onerror = () => resolve(file);
+  });
+};
+
 function ProfileSkeleton() {
   return (
     <div className="min-h-screen pb-stack-lg relative animate-pulse">
@@ -277,7 +334,10 @@ function ProfileContent() {
   // Load Tab Content (Posts, Reels, Saved)
   const loadTabContent = useCallback(async () => {
     const targetId = profileId || user?.id;
-    if (!targetId) return;
+    if (!targetId) {
+      setItemsLoading(false);
+      return;
+    }
 
     const isOwn = targetId === user?.id;
     // Skip loading if locked private profile
@@ -293,7 +353,7 @@ function ProfileContent() {
       if (activeTab === "Posts") {
         const { data } = await supabase
           .from("posts")
-          .select("*, author:profiles!author_id(id, display_name, username, avatar_url, role)")
+          .select("*, author:profiles!author_id(id, display_name, username, avatar_url, role), likes:likes(count), comments:comments(count)")
           .eq("author_id", targetId)
           .eq("type", "post")
           .order("created_at", { ascending: false });
@@ -302,7 +362,7 @@ function ProfileContent() {
       } else if (activeTab === "Reels") {
         const { data } = await supabase
           .from("posts")
-          .select("*, author:profiles!author_id(id, display_name, username, avatar_url, role)")
+          .select("*, author:profiles!author_id(id, display_name, username, avatar_url, role), likes:likes(count), comments:comments(count)")
           .eq("author_id", targetId)
           .eq("type", "reel")
           .order("created_at", { ascending: false });
@@ -310,7 +370,7 @@ function ProfileContent() {
       } else if (activeTab === "Saved") {
         const { data } = await supabase
           .from("bookmarks")
-          .select("*, post:posts(*, author:profiles!author_id(id, display_name, username, avatar_url, role))")
+          .select("*, post:posts(*, author:profiles!author_id(id, display_name, username, avatar_url, role), likes:likes(count), comments:comments(count))")
           .eq("user_id", targetId)
           .order("created_at", { ascending: false });
         fetchedItems = (data || []).map((b) => b.post).filter(Boolean);
@@ -324,20 +384,14 @@ function ProfileContent() {
 
         const [
           userLikesResult,
-          userBookmarksResult,
-          likesDataResult,
-          commentsDataResult
+          userBookmarksResult
         ] = await Promise.all([
           supabase.from("likes").select("post_id").eq("user_id", user.id).in("post_id", postIds),
-          supabase.from("bookmarks").select("post_id").eq("user_id", user.id).in("post_id", postIds),
-          supabase.from("likes").select("post_id").in("post_id", postIds),
-          supabase.from("comments").select("post_id").in("post_id", postIds)
+          supabase.from("bookmarks").select("post_id").eq("user_id", user.id).in("post_id", postIds)
         ]);
 
         const userLikes = userLikesResult.data || [];
         const userBookmarks = userBookmarksResult.data || [];
-        const likesData = likesDataResult.data || [];
-        const commentsData = commentsDataResult.data || [];
 
         const likedMap = {};
         userLikes.forEach((l) => (likedMap[l.post_id] = true));
@@ -347,16 +401,14 @@ function ProfileContent() {
         userBookmarks.forEach((b) => (bookmarkedMap[b.post_id] = true));
         setBookmarkedPosts((prev) => ({ ...prev, ...bookmarkedMap }));
 
+        // Populate counts directly from count relations
         const counts = {};
-        likesData.forEach((l) => {
-          counts[l.post_id] = (counts[l.post_id] || 0) + 1;
+        const cCounts = {};
+        fetchedItems.forEach((post) => {
+          counts[post.id] = post.likes?.[0]?.count || 0;
+          cCounts[post.id] = post.comments?.[0]?.count || 0;
         });
         setLikeCounts((prev) => ({ ...prev, ...counts }));
-
-        const cCounts = {};
-        commentsData.forEach((c) => {
-          cCounts[c.post_id] = (cCounts[c.post_id] || 0) + 1;
-        });
         setCommentCounts((prev) => ({ ...prev, ...cCounts }));
       }
     } catch (err) {
@@ -466,7 +518,7 @@ function ProfileContent() {
 
   // Entrance Animations
   useEffect(() => {
-    if (loading) return;
+    if (loading || !containerRef.current) return;
     const ctx = gsap.context(() => {
       gsap.from(".profile-header-card", {
         y: 60,
@@ -474,21 +526,28 @@ function ProfileContent() {
         duration: 0.8,
         ease: "power3.out",
       });
-    }, containerRef);
+    }, containerRef.current);
     return () => ctx.revert();
   }, [loading]);
 
   useEffect(() => {
-    if (itemsLoading) return;
+    if (itemsLoading || items.length === 0 || !containerRef.current) return;
     const ctx = gsap.context(() => {
+      const isMobile = window.innerWidth < 768;
       gsap.fromTo(
         ".post-grid-item",
-        { scale: 0.95, opacity: 0 },
-        { scale: 1, opacity: 1, stagger: 0.05, duration: 0.6, ease: "power2.out" }
+        { scale: isMobile ? 0.98 : 0.95, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          stagger: isMobile ? 0.01 : 0.03,
+          duration: isMobile ? 0.35 : 0.5,
+          ease: "power2.out"
+        }
       );
-    }, containerRef);
+    }, containerRef.current);
     return () => ctx.revert();
-  }, [itemsLoading]);
+  }, [itemsLoading, items.length]);
 
   // Tab change
   const handleTabClick = (tabName, event) => {
@@ -589,13 +648,14 @@ function ProfileContent() {
 
     setUploadingAvatar(true);
     try {
-      const fileExt = file.name.split(".").pop();
-      const filePath = `${user.id}/avatar.${fileExt}`;
+      // Compress avatar to max 400x400, 75% quality
+      const compressed = await compressImage(file, 400, 400, 0.75);
+      const filePath = `${user.id}/avatar.jpg`;
 
       // Upload image to profiles bucket
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(filePath, file, { upsert: true });
+        .upload(filePath, compressed, { upsert: true, contentType: "image/jpeg" });
 
       if (uploadError) throw uploadError;
 
@@ -625,13 +685,14 @@ function ProfileContent() {
 
     setUploadingCover(true);
     try {
-      const fileExt = file.name.split(".").pop();
-      const filePath = `${user.id}/cover.${fileExt}`;
+      // Compress cover image to max 1200x500, 75% quality
+      const compressed = await compressImage(file, 1200, 500, 0.75);
+      const filePath = `${user.id}/cover.jpg`;
 
       // Upload image to profiles bucket
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(filePath, file, { upsert: true });
+        .upload(filePath, compressed, { upsert: true, contentType: "image/jpeg" });
 
       if (uploadError) throw uploadError;
 
@@ -705,7 +766,7 @@ function ProfileContent() {
 
       {/* Profile Info Header */}
       <section className="px-margin-mobile md:px-margin-desktop -mt-16 relative z-10 max-w-screen-xl mx-auto">
-        <div className="profile-header-card bg-surface p-stack-md border border-outline-variant rounded-sm shadow-[0px_10px_30px_rgba(0,0,0,0.02)]">
+        <div className="profile-header-card bg-surface p-4 sm:p-6 md:p-stack-md border border-outline-variant rounded-sm shadow-[0px_10px_30px_rgba(0,0,0,0.02)]">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-gutter">
             <div className="flex flex-col gap-unit">
               {/* Avatar & Edit Button Container */}
@@ -753,7 +814,7 @@ function ProfileContent() {
               <p className="font-caption text-caption text-secondary uppercase tracking-widest">@{profileUser.username}</p>
 
               {profileUser.bio ? (
-                <p className="font-body-md text-secondary max-w-lg mt-2 leading-relaxed">
+                <p className="font-body-md text-secondary max-w-lg mt-2 leading-relaxed break-words whitespace-pre-wrap">
                   {profileUser.bio}
                 </p>
               ) : (
@@ -778,7 +839,7 @@ function ProfileContent() {
             {/* Stats and Call Actions */}
             <div className="flex flex-col gap-stack-sm items-start md:items-end shrink-0">
               {/* Stats */}
-              <div className="flex gap-stack-md mb-2">
+              <div className="flex gap-4 sm:gap-6 md:gap-stack-md mb-2">
                 {[
                   { label: "Posts", count: postCount, clickable: false },
                   { label: "Followers", count: followerCount, clickable: true },
@@ -851,7 +912,7 @@ function ProfileContent() {
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex gap-stack-lg border-b border-outline-variant/40 mt-stack-lg relative select-none">
+          <div className="flex gap-4 sm:gap-6 md:gap-stack-lg border-b border-outline-variant/40 mt-stack-lg relative select-none">
             {[
               { id: "Posts", icon: <Grid size={16} /> },
               { id: "Reels", icon: <Film size={16} /> },
@@ -1149,11 +1210,7 @@ function ProfileContent() {
 
 export default function Profile() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="animate-spin text-primary" size={32} />
-      </div>
-    }>
+    <Suspense fallback={<ProfileSkeleton />}>
       <ProfileContent />
     </Suspense>
   );

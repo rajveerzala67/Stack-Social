@@ -27,6 +27,7 @@ export default function SideNavBar() {
 
   // Animate the sidebar entry
   useEffect(() => {
+    if (!navRef.current) return;
     const ctx = gsap.context(() => {
       gsap.from(".nav-item", {
         opacity: 0,
@@ -41,7 +42,7 @@ export default function SideNavBar() {
         delay: 0.3,
         ease: "power2.out",
       });
-    }, navRef);
+    }, navRef.current);
 
     return () => ctx.revert();
   }, []);

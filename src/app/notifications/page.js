@@ -16,7 +16,10 @@ export default function NotificationsPage() {
 
   // Fetch pending follow requests and notifications
   const loadNotifications = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
 
     try {
@@ -56,8 +59,12 @@ export default function NotificationsPage() {
   }, [user]);
 
   useEffect(() => {
-    loadNotifications();
-  }, [loadNotifications]);
+    if (user) {
+      loadNotifications();
+    } else {
+      setLoading(false);
+    }
+  }, [loadNotifications, user]);
 
   // Realtime subscription for incoming notifications
   useEffect(() => {
@@ -119,27 +126,30 @@ export default function NotificationsPage() {
 
   // GSAP animations
   useEffect(() => {
-    if (loading) return;
+    if (loading || !containerRef.current) return;
     const ctx = gsap.context(() => {
+      const isMobile = window.innerWidth < 768;
       gsap.from(".anim-section", {
         opacity: 0,
-        y: 20,
-        stagger: 0.15,
-        duration: 0.7,
+        y: isMobile ? 10 : 20,
+        stagger: isMobile ? 0.04 : 0.1,
+        duration: isMobile ? 0.4 : 0.6,
         ease: "power2.out",
       });
-      gsap.from(".anim-item", {
-        opacity: 0,
-        y: 15,
-        stagger: 0.05,
-        duration: 0.6,
-        ease: "power2.out",
-        delay: 0.1,
-      });
-    }, containerRef);
+      if (followRequests.length > 0 || activities.length > 0) {
+        gsap.from(".anim-item", {
+          opacity: 0,
+          y: isMobile ? 8 : 15,
+          stagger: isMobile ? 0.015 : 0.03,
+          duration: isMobile ? 0.35 : 0.5,
+          ease: "power2.out",
+          delay: isMobile ? 0.05 : 0.1,
+        });
+      }
+    }, containerRef.current);
 
     return () => ctx.revert();
-  }, [loading]);
+  }, [loading, followRequests.length, activities.length]);
 
   // Handle follow requests (Accept/Decline)
   const handleFollowResponse = async (reqId, accepted) => {
@@ -216,7 +226,7 @@ export default function NotificationsPage() {
       <div className="w-full max-w-[720px] mx-auto px-margin-mobile md:px-margin-desktop py-4 flex flex-col items-center">
         {/* Header */}
         <header className="mb-stack-lg border-b border-outline-variant/30 pb-6 anim-section w-full text-center flex flex-col items-center">
-          <h1 className="font-serif font-black text-5xl sm:text-6xl md:text-7xl text-primary mb-4 tracking-tight leading-tight uppercase">
+          <h1 className="font-serif font-black text-[32px] sm:text-5xl md:text-7xl text-primary mb-4 tracking-tight leading-tight uppercase">
             Notifications
           </h1>
           <p className="font-body-lg text-body-lg text-secondary max-w-xl leading-relaxed">
@@ -258,8 +268,8 @@ export default function NotificationsPage() {
                     </div>
                     {/* Requester Info */}
                     <div className="min-w-0 flex-1">
-                      <p className="font-body-md font-bold text-primary truncate leading-tight">{req.follower?.display_name}</p>
-                      <p className="font-caption text-secondary truncate mt-0.5">@{req.follower?.username}</p>
+                      <p className="font-body-md font-bold text-sm md:text-base text-primary truncate leading-tight">{req.follower?.display_name}</p>
+                      <p className="font-caption text-[10px] md:text-caption text-secondary truncate mt-0.5">@{req.follower?.username}</p>
                     </div>
                     {/* Accept/Decline Buttons */}
                     <div className="flex items-center gap-2 shrink-0">
@@ -320,12 +330,12 @@ export default function NotificationsPage() {
 
                     {/* Activity Content Text */}
                     <div className="flex-1 min-w-0">
-                      <p className="font-body-md text-primary">
+                      <p className="font-body-md text-sm md:text-base text-primary">
                         <span className="font-semibold cursor-pointer hover:underline">{act.actor?.display_name}</span>{" "}
                         <span className="text-secondary">{act.message}</span>
                       </p>
 
-                      <span className="font-caption text-caption text-secondary/60 mt-1.5 block">
+                      <span className="font-caption text-[10px] md:text-caption text-secondary/60 mt-1.5 block">
                         {timeAgo(act.created_at)}
                       </span>
                     </div>

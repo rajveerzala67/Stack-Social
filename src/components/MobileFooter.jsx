@@ -15,8 +15,16 @@ export default function MobileFooter() {
     { label: "Profile", path: "/profile", icon: User },
   ];
 
+  const handleTabClick = (path, e) => {
+    if (pathname === path) {
+      if (typeof window !== "undefined") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  };
+
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface-bright/90 backdrop-blur-xl border-t border-outline-variant flex justify-around items-center z-50">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 pb-[env(safe-area-inset-bottom)] h-[calc(4rem+env(safe-area-inset-bottom))] bg-surface-bright/90 backdrop-blur-xl border-t border-outline-variant flex justify-around items-center z-50">
       {navItems.map((item) => {
         const isActive = pathname === item.path;
         const IconComponent = item.icon;
@@ -24,7 +32,8 @@ export default function MobileFooter() {
           <Link
             key={item.label}
             href={item.path}
-            className={`flex flex-col items-center justify-center p-2 transition-transform active:scale-90 ${
+            onClick={(e) => handleTabClick(item.path, e)}
+            className={`flex flex-col items-center justify-center p-3 transition-transform active:scale-90 ${
               isActive ? "text-primary font-bold" : "text-secondary"
             }`}
           >

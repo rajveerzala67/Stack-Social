@@ -115,39 +115,33 @@ export function AuthProvider({ children }) {
 
   // Initialize auth state
   useEffect(() => {
-    const initAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          setUser(session.user);
-          const p = await fetchProfile(session.user.id);
-          setProfile(p);
-        }
-      } catch (err) {
-        console.error("Auth init error:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    initAuth();
+    let isMounted = true;
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!isMounted) return;
         if (session?.user) {
           setUser(session.user);
+          setIsLoading(false); // Resolve auth loading state instantly!
+
+          // Fetch profile details asynchronously in the background
           const p = await fetchProfile(session.user.id);
-          setProfile(p);
+          if (isMounted) {
+            setProfile(p);
+          }
         } else {
           setUser(null);
           setProfile(null);
+          setIsLoading(false);
         }
-        setIsLoading(false);
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, [fetchProfile]);
 
   // Sign in with email/password

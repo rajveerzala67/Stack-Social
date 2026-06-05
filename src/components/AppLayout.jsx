@@ -34,7 +34,7 @@ export default function AppLayout({ children }) {
         { opacity: 0, y: 15 },
         { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
       );
-    }, mainRef);
+    }, mainRef.current);
 
     return () => ctx.revert();
   }, [pathname]);
@@ -76,7 +76,7 @@ export default function AppLayout({ children }) {
       <SideNavBar />
       {!isCreatePage && <MobileHeader />}
       <main ref={mainRef} className={mainClass}>
-        <div className={`min-h-screen ${isCreatePage ? "" : "pb-16"} lg:pb-0`}>
+        <div className={`min-h-screen ${isCreatePage ? "" : "pb-[calc(4rem+env(safe-area-inset-bottom))]"} lg:pb-0`}>
           {children}
         </div>
       </main>

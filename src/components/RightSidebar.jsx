@@ -19,10 +19,22 @@ export default function RightSidebar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(true);
+
+  // Track viewport size to avoid queries when sidebar is hidden
+  useEffect(() => {
+    const handleResize = () => {
+      const threshold = pathname === "/profile" ? 1024 : 1280;
+      setIsMobileViewport(window.innerWidth < threshold);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [pathname]);
 
   // Fetch suggested creators
   const fetchSuggestions = useCallback(async () => {
-    if (!user) {
+    if (!user || isMobileViewport) {
       setLoading(false);
       return;
     }
@@ -55,15 +67,19 @@ export default function RightSidebar() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, isMobileViewport]);
 
   useEffect(() => {
-    fetchSuggestions();
-  }, [fetchSuggestions]);
+    if (!isMobileViewport) {
+      fetchSuggestions();
+    } else {
+      setLoading(false);
+    }
+  }, [fetchSuggestions, isMobileViewport]);
 
   // Animate sidebar content entrance on change
   useEffect(() => {
-    if (!sidebarRef.current || loading) return;
+    if (!sidebarRef.current || loading || creators.length === 0) return;
     const ctx = gsap.context(() => {
       gsap.from(".sidebar-section", {
         opacity: 0,
@@ -72,10 +88,10 @@ export default function RightSidebar() {
         duration: 0.7,
         ease: "power2.out",
       });
-    }, sidebarRef);
+    }, sidebarRef.current);
 
     return () => ctx.revert();
-  }, [pathname, loading]);
+  }, [pathname, loading, creators.length]);
 
   // Handle follow/unfollow toggle
   const toggleFollow = async (creatorId) => {

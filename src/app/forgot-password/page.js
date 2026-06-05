@@ -21,13 +21,14 @@ export default function ForgotPasswordPage() {
 
   // GSAP Entrance
   useEffect(() => {
+    if (!cardRef.current) return;
     const ctx = gsap.context(() => {
       gsap.fromTo(
         cardRef.current,
         { opacity: 0, y: 30, scale: 0.98 },
         { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power3.out" }
       );
-    }, cardRef);
+    }, cardRef.current);
     return () => ctx.revert();
   }, []);
 

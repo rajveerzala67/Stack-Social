@@ -212,13 +212,15 @@ export default function Settings() {
 
   // Entrance animations
   useEffect(() => {
+    if (!containerRef.current) return;
     const ctx = gsap.context(() => {
       // Stagger load settings elements
+      const isMobile = window.innerWidth < 768;
       gsap.from("section", {
         opacity: 0,
-        y: 15,
-        stagger: 0.1,
-        duration: 0.6,
+        y: isMobile ? 8 : 15,
+        stagger: isMobile ? 0.02 : 0.08,
+        duration: isMobile ? 0.35 : 0.5,
         ease: "power2.out",
       });
 
@@ -231,7 +233,7 @@ export default function Settings() {
           gsap.to(el, { scale: 1, duration: 0.1 });
         });
       });
-    }, containerRef);
+    }, containerRef.current);
 
     return () => ctx.revert();
   }, []);

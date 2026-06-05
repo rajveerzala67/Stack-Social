@@ -38,6 +38,7 @@ export default function LoginPage() {
 
   // GSAP Entrance Animations
   useEffect(() => {
+    if (!cardRef.current) return;
     const ctx = gsap.context(() => {
       gsap.fromTo(
         cardRef.current,
@@ -52,7 +53,7 @@ export default function LoginPage() {
         ease: "power2.out",
         delay: 0.2,
       });
-    }, cardRef);
+    }, cardRef.current);
 
     return () => ctx.revert();
   }, []);
